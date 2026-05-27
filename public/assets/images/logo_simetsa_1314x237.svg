@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1314" height="237" viewBox="0 0 1314 237" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="simetsa logo">
+  <title>simetsa</title>
+  <!-- Fondo transparente intencionalmente: no se dibuja ningún rectángulo de fondo -->
+  <text
+    x="657"
+    y="124"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    fill="#FFFFFF"
+    font-family="Montserrat, Poppins, Arial, Helvetica, sans-serif"
+    font-size="170"
+    font-weight="800"
+    letter-spacing="10">simetsa</text>
+</svg>
