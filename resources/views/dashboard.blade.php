@@ -139,6 +139,9 @@
                 Tarifa vigente: $0.25 por hora · Tiempo máximo: 2 horas (Art. 14) ·
                 Tolerancia: 5 minutos (Art. 13) · Horario: martes-viernes y domingo 08:00-18:00 (Art. 12).
             </p>
+            <a href="https://www.salcedo.gob.ec/ordenanza-simetsa/" target="_blank" class="small text-decoration-none">
+                Leer ordenanza completa
+            </a>
         </div>
     </div>
 
