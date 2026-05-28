@@ -4,6 +4,20 @@
     {{ Breadcrumbs::render('tarifas.index') }}
 @endsection
 
+@section('breadcrumb_elements')
+    
+    <div class="d-lg-flex mb-2 mb-lg-0">
+        @can('tarifas.crear')
+            <a href="{{ route('tarifas.create') }}" class="d-flex align-items-center text-body py-2">
+                <i class="bi bi-plus-lg me-2"></i>
+                Nueva tarifa
+            </a>
+        @endcan
+    </div>
+@endsection
+
+
+
 @section('content')
 
     <div class="alert alert-info small">

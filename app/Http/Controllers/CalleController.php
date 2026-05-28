@@ -35,7 +35,7 @@ class CalleController extends Controller
         if ($zonaId) {
             $query->where('zona_id', $zonaId);
         }
-        $calles = $query->paginate(30)->withQueryString();
+        $calles = $query->paginate(15)->withQueryString();
 
         // Polilíneas para el mapa (coloreadas por la zona)
         $callesMapa = Calle::with('zona')

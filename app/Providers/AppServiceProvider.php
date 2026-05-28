@@ -17,6 +17,8 @@ use Illuminate\Auth\Events\Lockout;
 use App\Listeners\RegistrarAccesoListener;
 use App\Models\Parametro;
 use App\Observers\ParametroObserver;
+use Illuminate\Pagination\Paginator;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        
+        // Configuración global para paginación con Bootstrap 5
+        Paginator::useBootstrapFive();
+
         // Registro explícito de la Policy de User
         // (aunque Laravel 11 auto-descubriría, declararlo aquí mejora la lectura)
         Gate::policy(User::class, UserPolicy::class);

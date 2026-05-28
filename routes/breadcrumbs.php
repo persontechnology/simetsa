@@ -84,6 +84,11 @@ Breadcrumbs::for('tipos-plaza.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
     $trail->push('Tipos de plaza', route('tipos-plaza.index')); 
 });
+// crear tipo de plaza
+Breadcrumbs::for('tipos-plaza.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('tipos-plaza.index');
+    $trail->push('Crear tipo de plaza', route('tipos-plaza.create')); 
+});
 // editar tipo de plaza
 Breadcrumbs::for('tipos-plaza.edit', function (BreadcrumbTrail $trail, $tipoPlaza) {
     $trail->parent('tipos-plaza.index');
@@ -125,6 +130,11 @@ Breadcrumbs::for('tarifas.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
     $trail->push('Tarifas', route('tarifas.index')); 
 }); 
+// crear tarifa
+Breadcrumbs::for('tarifas.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('tarifas.index');
+    $trail->push('Crear tarifa', route('tarifas.create'));
+});
 // editar tarifa
 Breadcrumbs::for('tarifas.edit', function (BreadcrumbTrail $trail, $tarifa) {
     $trail->parent('tarifas.index');        

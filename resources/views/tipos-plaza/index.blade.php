@@ -6,15 +6,15 @@
 
 @section('breadcrumb_elements')
     <div class="d-lg-flex mb-2 mb-lg-0">
-        
-        @can('create', App\Models\TipoPlaza::class)
+        @can('tipos_plaza.crear')
             <a href="{{ route('tipos-plaza.create') }}" class="d-flex align-items-center text-body py-2">
                 <i class="ph ph-plus me-1"></i> Nuevo tipo de plaza
             </a>
-        @endcan
             
+        @endcan
     </div>
 @endsection
+
 
 
 @section('content')
