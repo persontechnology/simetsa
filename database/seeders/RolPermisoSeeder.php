@@ -39,6 +39,9 @@ class RolPermisoSeeder extends Seeder
 
         $this->crearPermisos();
         $this->crearRoles();
+        // Limpiar caché de nuevo: crearPermisos() insertó nuevos registros y
+        // Spatie puede haber re-cacheado el conjunto previo durante el proceso.
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
         $this->asignarPermisos();
     }
 

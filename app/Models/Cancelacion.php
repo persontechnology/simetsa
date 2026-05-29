@@ -28,6 +28,8 @@ class Cancelacion extends Model
 {
     use HasFactory;
 
+    protected $table = 'cancelaciones';
+
     protected $fillable = [
         'ticket_id', 'cancelado_por', 'tipo',
         'motivo', 'monto_reembolsado', 'cancelado_en',
