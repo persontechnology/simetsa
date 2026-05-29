@@ -236,6 +236,11 @@ class RolPermisoSeeder extends Seeder
             'credenciales_discapacidad.ver', 'credenciales_discapacidad.aprobar',
             'vehiculos_exonerados.ver', 'vehiculos_exonerados.crear', 'vehiculos_exonerados.editar', 'vehiculos_exonerados.eliminar',
 
+            // Tickets (supervisión - Fase 5)
+            'tickets.ver',
+            'sesiones_parqueo.ver',
+            'cancelaciones.ver',
+
             // Reportes
             'reportes.ver', 'reportes.generar', 'reportes.exportar',
             'kpi.ver',
@@ -261,8 +266,10 @@ class RolPermisoSeeder extends Seeder
     private function permisosAgenteParqueo(): array
     {
         return [
-            // Tickets (venta en calle - Art. 24)
+            // Tickets (venta y validación en calle - Art. 24, 38)
             'tickets.ver', 'tickets.comprar',
+            'sesiones_parqueo.ver', 'sesiones_parqueo.iniciar',
+            'cancelaciones.ver',
 
             // Infracciones (constatación - Art. 13, 15, 17)
             'infracciones.ver', 'infracciones.registrar',
@@ -329,8 +336,8 @@ class RolPermisoSeeder extends Seeder
             'vehiculos.ver', 'vehiculos.crear', 'vehiculos.editar', 'vehiculos.eliminar',
             'credenciales_discapacidad.ver', 'credenciales_discapacidad.crear', 'credenciales_discapacidad.editar',
 
-            // Tickets propios
-            'tickets.ver', 'tickets.comprar',
+            // Tickets propios (Art. 41)
+            'tickets.ver', 'tickets.comprar', 'tickets.cancelar',
             'sesiones_parqueo.ver',
 
             // Pagos propios

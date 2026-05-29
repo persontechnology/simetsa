@@ -71,8 +71,8 @@ return [
 
     // ===== Tickets y operación (Art. 13, 14, 19, 22, 24) =====
     'tickets' => [
-        'tickets'           => ['ver', 'comprar', 'anular'],
-        'sesiones_parqueo'  => ['ver'],
+        'tickets'           => ['ver', 'comprar', 'cancelar', 'anular'],
+        'sesiones_parqueo'  => ['ver', 'iniciar'],
         'cancelaciones'     => ['ver', 'registrar'],
     ],
 
