@@ -340,8 +340,9 @@ class RolPermisoSeeder extends Seeder
             'credenciales_discapacidad.ver', 'credenciales_discapacidad.crear', 'credenciales_discapacidad.editar',
 
             // Tickets propios (Art. 41)
+            // Nota: sesiones_parqueo.ver NO se otorga al conductor — las sesiones se
+            // muestran anidadas en el ticket vía TicketResource, no como endpoint separado.
             'tickets.ver', 'tickets.comprar', 'tickets.cancelar',
-            'sesiones_parqueo.ver',
 
             // Pagos propios
             'pagos.ver',

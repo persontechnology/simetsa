@@ -3,8 +3,10 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CredencialDiscapacidadController as ApiCredencialDiscapacidadController;
+use App\Http\Controllers\Api\SesionParqueoController as ApiSesionParqueoController;
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\Api\TipoVehiculoController as ApiTipoVehiculoController;
+use App\Http\Controllers\Api\ValidacionTicketController;
 use App\Http\Controllers\Api\VehiculoController as ApiVehiculoController;
 use Illuminate\Support\Facades\Route;
 
@@ -45,12 +47,20 @@ Route::prefix('v1')->group(function () {
         Route::get('vehiculos/{vehiculo}/credencial',   [ApiCredencialDiscapacidadController::class, 'show'])->name('api.credencial.show');
 
         // ===== Fase 5.C — Tickets del conductor (Arts. 13, 14, 19, 22) =====
+        // IMPORTANTE: rutas estáticas bajo /tickets ANTES de la ruta con parámetro {ticket}
         Route::get('tickets', [ApiTicketController::class, 'index'])
             ->middleware('permission:tickets.ver')
             ->name('api.tickets.index');
         Route::get('tickets/historial', [ApiTicketController::class, 'historial'])
             ->middleware('permission:tickets.ver')
             ->name('api.tickets.historial');
+
+        // ===== Fase 5.D — Validación por placa (agente) — debe ir ANTES de tickets/{ticket} =====
+        Route::get('tickets/validar/{placa}', [ValidacionTicketController::class, 'validar'])
+            ->middleware('permission:sesiones_parqueo.ver')
+            ->name('api.tickets.validar');
+
+        // Rutas con parámetro {ticket} — van después de las estáticas
         Route::get('tickets/{ticket}', [ApiTicketController::class, 'show'])
             ->middleware('permission:tickets.ver')
             ->name('api.tickets.show');
@@ -60,5 +70,13 @@ Route::prefix('v1')->group(function () {
         Route::post('tickets/{ticket}/cancelar', [ApiTicketController::class, 'cancelar'])
             ->middleware('permission:tickets.cancelar')
             ->name('api.tickets.cancelar');
+
+        // ===== Fase 5.D — Sesiones de parqueo (Art. 38) =====
+        Route::post('sesiones-parqueo', [ApiSesionParqueoController::class, 'store'])
+            ->middleware('permission:sesiones_parqueo.iniciar')
+            ->name('api.sesiones-parqueo.store');
+        Route::get('sesiones-parqueo/{sesion}', [ApiSesionParqueoController::class, 'show'])
+            ->middleware('permission:sesiones_parqueo.ver')
+            ->name('api.sesiones-parqueo.show');
     });
 });
