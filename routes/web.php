@@ -25,6 +25,7 @@ use App\Http\Controllers\SolicitudPuntoVentaController;
 use App\Http\Controllers\TarifaController;
 use App\Http\Controllers\TipoPlazaController;
 use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\CredencialDiscapacidadController;
 use App\Http\Controllers\TipoVehiculoController;
 use App\Http\Controllers\VehiculoController;
@@ -304,6 +305,13 @@ Route::middleware('auth')->group(function () {
         Route::resource('vehiculos-exonerados', VehiculoExoneradoController::class)
             ->parameters(['vehiculos-exonerados' => 'vehiculo_exonerado'])
             ->except(['show']);
+
+        // ===== SIMETSA — Tickets digitales supervisión (Fase 5.E-5.F) =====
+        Route::resource('tickets', TicketController::class)
+            ->only(['index', 'show'])
+            ->parameters(['tickets' => 'ticket']);
+        Route::patch('tickets/{ticket}/anular', [TicketController::class, 'anular'])
+            ->name('tickets.anular');
 
     });
 });

@@ -317,3 +317,13 @@ Breadcrumbs::for('vehiculos-exonerados.edit', function (BreadcrumbTrail $trail, 
     $trail->parent('vehiculos-exonerados.index');
     $trail->push('Editar ' . $vehiculo->placa, route('vehiculos-exonerados.edit', $vehiculo));
 });
+
+// ===== Fase 5 — Tickets digitales =====
+Breadcrumbs::for('tickets.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Tickets', route('tickets.index'));
+});
+Breadcrumbs::for('tickets.show', function (BreadcrumbTrail $trail, $ticket) {
+    $trail->parent('tickets.index');
+    $trail->push($ticket->codigo, route('tickets.show', $ticket));
+});
