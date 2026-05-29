@@ -106,7 +106,6 @@ Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
 ## Deuda técnica abierta
 
 - **`AgenteParqueoService::autorizar`** usa el patrón viejo de creación de perfil sin resolver identidad por cédula. Aplicar el mismo arreglo que `PuntoVentaService::activar` (resolución **cédula → correo → crear**) al volver sobre Fase 3. Alternativa: extraer un `ResolutorCuentaService` compartido.
-- Confirmar que phpunit usa PostgreSQL (queries con `TO_CHAR`, `ILIKE`, `jsonb`).
 - `UsuarioController` y `RolController` (Fase 1) usan `authorizeResource` en constructor (incompatible con Laravel 11); migrar a `HasMiddleware`.
 - **Comando `simetsa:marcar-credenciales-vencidas`**: transicionar credenciales CONADIS con `fecha_vencimiento < today()` a estado `vencida`. Implementar en Fase 5 o como mantenimiento paralelo.
 - **`VehiculoExonerado` sin suspensión temporal**: agregar acción `activar/desactivar` si el comisario necesita suspender una exoneración sin eliminarla (actualmente solo hay `activo` boolean).
