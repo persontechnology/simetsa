@@ -96,7 +96,8 @@ Cédulas válidas para tests: `1710034065`, `1102345677`. En tests de activació
 - **Fase 2** ✓ Catálogos base (zonas, calles, manzanas, plazas, tipos, tarifas, horarios, feriados, parámetros).
 - **Fase 3** ✓ Agentes de Parqueo (3.A–3.D) y Puntos de Venta (3.E.1–3.E.2).
 - **Fase 4** ✓ Conductores y Vehículos (API móvil + backoffice supervisión). 4.A TipoVehiculo CRUD backoffice + API read-only. 4.B Vehiculo API CRUD (Sanctum, ownership). 4.C CredencialDiscapacidad CONADIS (Art. 26). 4.D Backoffice conductores + VehiculoExonerado (Art. 27). 55 tests.
-- **Fase 5** ⏳ Sistema de Tickets Digitales. **Próximo paso.**
+- **Fase 5** ✓ Sistema de Tickets Digitales. 5.A modelos/migraciones/enums. 5.B TicketService (Arts. 12–14, 22, 26, 27) + 21 tests de borde. 5.C API conductor (comprar, historial, cancelar). 5.D API agente (validar placa, iniciar sesión). 5.E–5.F Backoffice supervisión y anulación. 5.G FCM placeholder (dispositivos + cola lógica). 68 tests. Decisiones: EstadoTicket como BackedEnum PHP 8.2, SesionParqueo 1:1 con Ticket, Cancelacion unifica conductor/admin con tipo enum.
+- **Fase 6** ⏳ Integración PayPhone + FCM real. **Próximo paso.**
 
 Roadmap completo (Fases 4–11 con detalle): ver `docs/roadmap-fases.md`.
 Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
@@ -107,8 +108,10 @@ Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
 
 - **`AgenteParqueoService::autorizar`** usa el patrón viejo de creación de perfil sin resolver identidad por cédula. Aplicar el mismo arreglo que `PuntoVentaService::activar` (resolución **cédula → correo → crear**) al volver sobre Fase 3. Alternativa: extraer un `ResolutorCuentaService` compartido.
 - `UsuarioController` y `RolController` (Fase 1) usan `authorizeResource` en constructor (incompatible con Laravel 11); migrar a `HasMiddleware`.
-- **Comando `simetsa:marcar-credenciales-vencidas`**: transicionar credenciales CONADIS con `fecha_vencimiento < today()` a estado `vencida`. Implementar en Fase 5 o como mantenimiento paralelo.
+- **Comando `simetsa:marcar-credenciales-vencidas`**: transicionar credenciales CONADIS con `fecha_vencimiento < today()` a estado `vencida`. Pendiente de Fase 6 o mantenimiento paralelo.
 - **`VehiculoExonerado` sin suspensión temporal**: agregar acción `activar/desactivar` si el comisario necesita suspender una exoneración sin eliminarla (actualmente solo hay `activo` boolean).
+- **Estados de ticket en BD**: el estado `en_tolerancia` / `expirado` se calcula en tiempo real en `TicketService::calcularEstadoActual()`; la BD puede quedar con estado `activo` si el vehículo superó su tiempo. Un comando artisan programado debería sincronizar los estados — pendiente de Fase 6.
+- **`sesiones_parqueo.ver` no asignado a conductor**: el conductor ve la sesión embebida en `TicketResource` (relación `whenLoaded`); no tiene acceso directo al endpoint `/sesiones-parqueo/{id}`.
 
 ---
 

@@ -49,15 +49,25 @@ Trabajamos por **fases incrementales**. No avanzar a la siguiente fase hasta que
 
 **4.D** Backoffice supervisión y exoneraciones (Art. 27, Art. 37): `ConductorController` (listado + detalle + bloquear/desbloquear, Art. 37); `VehiculoExonerado` + `VehiculoExoneradoController` (CRUD completo; sin FK a `vehiculos` — son vehículos institucionales: Policía, Bomberos, FF.AA., Municipal; tiempo máximo 2 horas, Art. 27). `ConductorService::cambiarEstado()`. Vistas Blade: `conductores/{index,show}`, `vehiculos-exonerados/{index,create,edit}`. `ConductorControllerTest` (8 tests), `VehiculoExoneradoControllerTest` (8 tests).
 
-## Fase 5 — Sistema de Tickets Digitales ⏳ Próximo paso.
+## Fase 5 — Sistema de Tickets Digitales ✓
 
-- Compra de tickets desde la app móvil.
-- Tiempo máximo de 2 horas (Art. 14).
-- Tolerancia de 5 minutos (Art. 13).
-- Notificaciones FCM de tiempo restante.
-- Historial de tickets por usuario.
+**Decisiones de diseño:** `EstadoTicket` como `BackedEnum` PHP 8.2; `SesionParqueo` tabla separada 1:1 con `Ticket`; `Cancelacion` unifica baja-conductor y anulación-admin con discriminador `tipo` enum; `zona_id` obligatorio + `calle_id` opcional en ticket; fallback $0.25/hora (Art. 22) si sin tarifa vigente; cruce de jornada rechazado con mensaje orientativo.
 
-## Fase 6 — Pasarela de Pagos PayPhone
+**5.A** Modelos, migraciones y enums: `Ticket`, `SesionParqueo`, `Cancelacion`, `DispositivoMovil`, `NotificacionPush`. Enums: `EstadoTicket`, `EstadoSesionParqueo`, `MetodoPago`, `TipoCancelacion`. Policies: `TicketPolicy` (ownership conductor), `SesionParqueoPolicy`.
+
+**5.B** `TicketService` con todas las reglas de la Ordenanza: `comprar`, `calcularMonto`, `validarHorarioYFeriado`, `validarMaximoHoras`, `validarPorPlaca` (tolerancia Art. 13), `cancelar`, `anular`. 21 tests de borde (Arts. 12, 13, 14, 22, 26, 27).
+
+**5.C** API móvil conductor: `GET /api/v1/tickets` (vigentes), `POST /api/v1/tickets` (comprar), `GET /api/v1/tickets/historial`, `GET /api/v1/tickets/{id}`, `POST /api/v1/tickets/{id}/cancelar`. `TicketResource`, `SesionParqueoResource`. 15 tests. `docs/api/tickets.md`.
+
+**5.D** API agente en calle: `GET /api/v1/tickets/validar/{placa}` (estado + tolerancia), `POST /api/v1/sesiones-parqueo` (iniciar), `GET /api/v1/sesiones-parqueo/{id}`. `SesionParqueoService`. 13 tests. `docs/api/sesiones.md`.
+
+**5.E–5.F** Backoffice supervisión y anulación: `TicketController` web (index + show + anular), vistas `tickets/{index,show}.blade.php`, modal de anulación. Acceso por rol (super_admin|comisario|director_seguridad). 9 tests.
+
+**5.G** FCM placeholder: `POST /api/v1/dispositivos` (registrar/actualizar token, idempotente), `DELETE /api/v1/dispositivos/{token}`. `NotificacionPushService::encolar()` / `marcarEnviada()`. 10 tests. `docs/api/dispositivos.md`.
+
+**Total Fase 5:** 68 tests, 7 commits, 3 docs de API.
+
+## Fase 6 — Pasarela de Pagos PayPhone ⏳ Próximo paso.
 
 - Integración con SDK de PayPhone (Laravel + React Native).
 - Liquidación automática **60/40** (agentes) y **90/10** (puntos de venta) — Art. 21.
