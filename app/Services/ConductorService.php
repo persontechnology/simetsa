@@ -77,4 +77,26 @@ class ConductorService
             return ['conductor' => $conductor, 'user' => $user, 'token' => $token];
         });
     }
+
+    /**
+     * Cambia el estado de la cuenta del conductor (activo ↔ bloqueado).
+     *
+     * @see Art. 37 Ordenanza SIMETSA (facultades del comisario).
+     *
+     * @param  Conductor  $conductor
+     * @param  string     $estado  'activo' | 'bloqueado'
+     * @return Conductor
+     *
+     * @throws \DomainException Si el estado no es válido.
+     */
+    public function cambiarEstado(Conductor $conductor, string $estado): Conductor
+    {
+        if (! in_array($estado, [Conductor::ESTADO_ACTIVO, Conductor::ESTADO_BLOQUEADO], true)) {
+            throw new \DomainException("Estado '{$estado}' no válido para un conductor.");
+        }
+
+        $conductor->update(['estado' => $estado]);
+
+        return $conductor->fresh();
+    }
 }

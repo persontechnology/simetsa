@@ -2,6 +2,9 @@
 // routes/api.php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CredencialDiscapacidadController as ApiCredencialDiscapacidadController;
+use App\Http\Controllers\Api\TipoVehiculoController as ApiTipoVehiculoController;
+use App\Http\Controllers\Api\VehiculoController as ApiVehiculoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,5 +25,22 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('api.logout');
         Route::get('perfil',  [AuthController::class, 'perfil'])->name('api.perfil');
+
+        // ===== Fase 4.A — Catálogo de tipos de vehículo (solo lectura, Art. 25) =====
+        Route::get('tipos-vehiculo', [ApiTipoVehiculoController::class, 'index'])->name('api.tipos-vehiculo.index');
+
+        // ===== Fase 4.B — Vehículos del conductor (Art. 25) =====
+        Route::apiResource('vehiculos', ApiVehiculoController::class)
+            ->names([
+                'index'   => 'api.vehiculos.index',
+                'store'   => 'api.vehiculos.store',
+                'show'    => 'api.vehiculos.show',
+                'update'  => 'api.vehiculos.update',
+                'destroy' => 'api.vehiculos.destroy',
+            ]);
+
+        // ===== Fase 4.C — Credencial CONADIS del conductor (Art. 26) =====
+        Route::post('vehiculos/{vehiculo}/credencial',  [ApiCredencialDiscapacidadController::class, 'store'])->name('api.credencial.store');
+        Route::get('vehiculos/{vehiculo}/credencial',   [ApiCredencialDiscapacidadController::class, 'show'])->name('api.credencial.show');
     });
 });

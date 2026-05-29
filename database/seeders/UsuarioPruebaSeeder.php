@@ -71,7 +71,7 @@ class UsuarioPruebaSeeder extends Seeder
                 'rol'              => RolSistema::SuperAdmin,
                 'name'             => 'Administrador SIMETSA',
                 'email'            => 'admin@simetsa.gob.ec',
-                'cedula'           => '0503652349',
+                'cedula'           => '1710034065',
                 'telefono_celular' => '0998765432',
                 'telefono'         => '032729001',
                 'direccion'        => 'Av. Olmedo y Calle Bolívar',

@@ -27,6 +27,7 @@ class ConductorResource extends JsonResource
             'cedula'           => $this->user?->perfil?->cedula,
             'telefono_celular' => $this->user?->perfil?->telefono_celular,
             'fecha_registro'   => $this->created_at?->toDateString(),
+            'total_vehiculos'  => $this->whenLoaded('vehiculos', fn () => $this->vehiculos->count()),
         ];
     }
 }

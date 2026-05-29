@@ -128,7 +128,7 @@ class CalleControllerTest extends TestCase
         $zona = Zona::where('codigo', 'centro')->first();
 
         $this->actingAs($u)
-             ->get(route('calles.index', ['zona_id' => $zona->id]))
+             ->get(route('calles.index', ['zona_id' => $zona->id, 'page' => 2]))
              ->assertOk()
              ->assertSee('Calle Vicente León');
     }

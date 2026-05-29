@@ -24,6 +24,11 @@ use App\Http\Controllers\SolicitudAgenteController;
 use App\Http\Controllers\SolicitudPuntoVentaController;
 use App\Http\Controllers\TarifaController;
 use App\Http\Controllers\TipoPlazaController;
+use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\CredencialDiscapacidadController;
+use App\Http\Controllers\TipoVehiculoController;
+use App\Http\Controllers\VehiculoController;
+use App\Http\Controllers\VehiculoExoneradoController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ZonaController;
 use Illuminate\Support\Facades\Route;
@@ -266,6 +271,37 @@ Route::middleware('auth')->group(function () {
 
         Route::patch('puntos-venta/{punto}/estado',
             [PuntoVentaController::class, 'cambiarEstado'])->name('puntos-venta.estado');
+
+        // ===== SIMETSA - Catálogo de tipos de vehículo (Fase 4.A, Art. 25) =====
+        Route::resource('tipos-vehiculo', TipoVehiculoController::class)
+            ->parameters(['tipos-vehiculo' => 'tipo_vehiculo'])
+            ->except(['show']);
+
+        // ===== SIMETSA - Supervisión de vehículos (Fase 4.B, Art. 25) =====
+        Route::resource('vehiculos', VehiculoController::class)
+            ->only(['index', 'show']);
+        Route::patch('vehiculos/{vehiculo}/estado',
+            [VehiculoController::class, 'cambiarEstado'])->name('vehiculos.estado');
+
+        // ===== SIMETSA — Credenciales CONADIS backoffice (Fase 4.C, Art. 26) =====
+        Route::patch('credenciales-discapacidad/{credencial_discapacidad}/aprobar',
+            [CredencialDiscapacidadController::class, 'aprobar'])->name('credenciales-discapacidad.aprobar');
+        Route::patch('credenciales-discapacidad/{credencial_discapacidad}/rechazar',
+            [CredencialDiscapacidadController::class, 'rechazar'])->name('credenciales-discapacidad.rechazar');
+
+        // ===== SIMETSA — Conductores backoffice (Fase 4.D, Art. 37) =====
+        Route::resource('conductores', ConductorController::class)
+            ->only(['index', 'show'])
+            ->parameters(['conductores' => 'conductor']);
+        Route::patch('conductores/{conductor}/bloquear',
+            [ConductorController::class, 'bloquear'])->name('conductores.bloquear');
+        Route::patch('conductores/{conductor}/desbloquear',
+            [ConductorController::class, 'desbloquear'])->name('conductores.desbloquear');
+
+        // ===== SIMETSA — Vehículos exonerados (Fase 4.D, Art. 27) =====
+        Route::resource('vehiculos-exonerados', VehiculoExoneradoController::class)
+            ->parameters(['vehiculos-exonerados' => 'vehiculo_exonerado'])
+            ->except(['show']);
 
     });
 });

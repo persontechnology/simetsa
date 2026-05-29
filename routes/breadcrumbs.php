@@ -249,6 +249,30 @@ Breadcrumbs::for('cursos-capacitacion.show', function (BreadcrumbTrail $trail, $
 
 /* --------------------------------------- */
 /* Solicitud punto de venta */
+// ===== Fase 4.A — Tipos de vehículo =====
+Breadcrumbs::for('tipos-vehiculo.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Tipos de vehículo', route('tipos-vehiculo.index'));
+});
+Breadcrumbs::for('tipos-vehiculo.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('tipos-vehiculo.index');
+    $trail->push('Crear tipo de vehículo', route('tipos-vehiculo.create'));
+});
+Breadcrumbs::for('tipos-vehiculo.edit', function (BreadcrumbTrail $trail, $tipoVehiculo) {
+    $trail->parent('tipos-vehiculo.index');
+    $trail->push('Editar tipo de vehículo', route('tipos-vehiculo.edit', $tipoVehiculo->id));
+});
+
+// ===== Fase 4.B — Vehículos (supervisión backoffice) =====
+Breadcrumbs::for('vehiculos.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Vehículos', route('vehiculos.index'));
+});
+Breadcrumbs::for('vehiculos.show', function (BreadcrumbTrail $trail, $vehiculo) {
+    $trail->parent('vehiculos.index');
+    $trail->push($vehiculo->placa, route('vehiculos.show', $vehiculo->id));
+});
+
 Breadcrumbs::for('solicitudes-punto-venta.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
     $trail->push('Solicitudes de punto de venta', route('solicitudes-punto-venta.index'));
@@ -269,3 +293,27 @@ Breadcrumbs::for('solicitudes-punto-venta.create', function (BreadcrumbTrail $tr
     $trail->push('Crear solicitud de punto de venta', route('solicitudes-punto-venta.create'));
 });
 
+
+// ===== Fase 4.D — Conductores backoffice =====
+Breadcrumbs::for('conductores.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Conductores', route('conductores.index'));
+});
+Breadcrumbs::for('conductores.show', function (BreadcrumbTrail $trail, $conductor) {
+    $trail->parent('conductores.index');
+    $trail->push($conductor->user?->name ?? $conductor->codigo, route('conductores.show', $conductor));
+});
+
+// ===== Fase 4.D — Vehículos exonerados =====
+Breadcrumbs::for('vehiculos-exonerados.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Vehículos exonerados', route('vehiculos-exonerados.index'));
+});
+Breadcrumbs::for('vehiculos-exonerados.create', function (BreadcrumbTrail $trail) {
+    $trail->parent('vehiculos-exonerados.index');
+    $trail->push('Registrar', route('vehiculos-exonerados.create'));
+});
+Breadcrumbs::for('vehiculos-exonerados.edit', function (BreadcrumbTrail $trail, $vehiculo) {
+    $trail->parent('vehiculos-exonerados.index');
+    $trail->push('Editar ' . $vehiculo->placa, route('vehiculos-exonerados.edit', $vehiculo));
+});

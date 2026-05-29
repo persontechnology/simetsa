@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -28,6 +29,16 @@ class Conductor extends Model
      * @var array<int, string>
      */
     protected $fillable = ['user_id', 'codigo', 'estado'];
+
+    /**
+     * Vehículos del conductor (1:N, Art. 25).
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function vehiculos(): HasMany
+    {
+        return $this->hasMany(Vehiculo::class);
+    }
 
     /**
      * Cuenta de usuario asociada (1:1).

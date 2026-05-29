@@ -48,30 +48,6 @@ class TarifaSeeder extends Seeder
                 'vigente_hasta' => null,
                 'descripcion'   => 'Cooperativas de taxis pagan por la Ordenanza de Ocupación de Vía Pública, no por SIMETSA (Art. 8).',
             ],
-            [
-                'tipo_codigo'   => TipoPlaza::COD_DISCAPACIDAD,
-                'nombre'        => 'Tarifa exonerada para personas con discapacidad',
-                'valor_hora'    => 0.0000,
-                'vigente_desde' => '2020-02-10',
-                'vigente_hasta' => null,
-                'descripcion'   => 'Exonerada de pago para personas con credencial CONADIS (Art. 26).',
-            ],
-            [
-                'tipo_codigo'   => TipoPlaza::COD_AUTORIDAD,
-                'nombre'        => 'Tarifa exonerada para autoridades',
-                'valor_hora'    => 0.0000,
-                'vigente_desde' => '2020-02-10',
-                'vigente_hasta' => null,
-                'descripcion'   => 'Exonerada de pago para ambulancias, bomberos, policía y FF.AA. (Art. 27).',
-            ],
-            [
-                'tipo_codigo'   => TipoPlaza::COD_MOTO,
-                'nombre'        => 'Tarifa para motos (referencial)',
-                'valor_hora'    => 0.15,
-                'vigente_desde' => '2024-01-01',
-                'vigente_hasta' => null,
-                'descripcion'   => 'Tarifa referencial para motos, no establecida en la Ordenanza pero común en otras jurisdicciones.',
-            ],
         ];
 
         foreach ($tarifas as $datos) {

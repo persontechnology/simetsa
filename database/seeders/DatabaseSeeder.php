@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -34,6 +33,8 @@ class DatabaseSeeder extends Seeder
             OperacionAgenteSeeder::class,
             SolicitudPuntoVentaSeeder::class,
             PuntoVentaSeeder::class,
+            // Fase 4
+            TipoVehiculoSeeder::class,
             ConductorSeeder::class,
         ]);
     }

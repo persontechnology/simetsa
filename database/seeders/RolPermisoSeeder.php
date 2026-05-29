@@ -152,6 +152,13 @@ class RolPermisoSeeder extends Seeder
             'amonestaciones.ver', 'amonestaciones.registrar',
             'expedientes_agente.ver',
 
+            // Conductores y vehículos (Art. 25-27, Fase 4)
+            'conductores.ver', 'conductores.editar',
+            'vehiculos.ver',
+            'tipos_vehiculo.ver',
+            'credenciales_discapacidad.ver', 'credenciales_discapacidad.aprobar',
+            'vehiculos_exonerados.ver', 'vehiculos_exonerados.crear', 'vehiculos_exonerados.editar', 'vehiculos_exonerados.eliminar',
+
             // Puntos de venta (Art. 31)
             'puntos_venta.ver', 'puntos_venta.crear', 'puntos_venta.editar',
             'solicitudes_punto_venta.ver', 'solicitudes_punto_venta.crear', 'solicitudes_punto_venta.aprobar', 'solicitudes_punto_venta.rechazar',
@@ -222,9 +229,12 @@ class RolPermisoSeeder extends Seeder
             'solicitudes_agente.ver', 'solicitudes_agente.aprobar',
             'asignaciones_zona.ver', 'asignaciones_zona.asignar',
 
-            // Exonerados (Art. 26, 27)
+            // Conductores y vehículos (Art. 25-27, Fase 4)
+            'conductores.ver',
+            'vehiculos.ver',
+            'tipos_vehiculo.ver', 'tipos_vehiculo.crear', 'tipos_vehiculo.editar', 'tipos_vehiculo.eliminar',
             'credenciales_discapacidad.ver', 'credenciales_discapacidad.aprobar',
-            'vehiculos_exonerados.ver', 'vehiculos_exonerados.crear', 'vehiculos_exonerados.editar',
+            'vehiculos_exonerados.ver', 'vehiculos_exonerados.crear', 'vehiculos_exonerados.editar', 'vehiculos_exonerados.eliminar',
 
             // Reportes
             'reportes.ver', 'reportes.generar', 'reportes.exportar',
@@ -315,8 +325,9 @@ class RolPermisoSeeder extends Seeder
             'perfiles.ver', 'perfiles.editar',
 
             // Vehículos propios
+            'tipos_vehiculo.ver',
             'vehiculos.ver', 'vehiculos.crear', 'vehiculos.editar', 'vehiculos.eliminar',
-            'credenciales_discapacidad.ver', 'credenciales_discapacidad.crear',
+            'credenciales_discapacidad.ver', 'credenciales_discapacidad.crear', 'credenciales_discapacidad.editar',
 
             // Tickets propios
             'tickets.ver', 'tickets.comprar',

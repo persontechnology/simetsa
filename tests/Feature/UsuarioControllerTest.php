@@ -78,7 +78,7 @@ class UsuarioControllerTest extends TestCase
             'password'              => 'Secreta12345',
             'password_confirmation' => 'Secreta12345',
             'roles'                 => [RolSistema::AgenteParqueo->value],
-            'cedula'                => '1710034065',
+            'cedula'                => '0508901238',
             'telefono_celular'      => '0991234567',
             'acepta_terminos'       => '1',
         ];
@@ -108,7 +108,7 @@ class UsuarioControllerTest extends TestCase
                 RolSistema::Comisario->value,
                 RolSistema::Conductor->value,
             ],
-            'cedula'                => '1710034065',
+            'cedula'                => '0508901238',
             'telefono_celular'      => '0991234567',
         ];
 
@@ -326,7 +326,7 @@ class UsuarioControllerTest extends TestCase
             'password'              => 'Secreta12345',
             'password_confirmation' => 'Secreta12345',
             'roles'                 => ['secretaria_general'],
-            'cedula'                => '1710034065',
+            'cedula'                => '0508901238',
             'telefono_celular'      => '0991234567',
             'acepta_terminos'       => '1',
         ];
