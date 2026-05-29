@@ -2,7 +2,7 @@
 
 > **Base legal:** Art. 26 Ordenanza SIMETSA — el conductor con discapacidad registrada ante el CONADIS puede solicitar exoneración del pago de parqueo adjuntando su credencial.
 
-Base URL: `${APP_URL}/api/v1` (desarrollo: `http://localhost:8000/api/v1`)
+Base URL: `${APP_URL}/api/v1` (desarrollo: `http://192.168.1.58:8000/api/v1`)
 
 ---
 
@@ -49,7 +49,7 @@ La aprobación y el rechazo son acciones **exclusivas del backoffice web** y no 
   "fecha_emision": "2023-01-15",
   "fecha_vencimiento": null,
   "estado": "pendiente",
-  "url_archivo": "http://localhost:8000/storage/credenciales/6/3/conadis_1748484000.pdf",
+  "url_archivo": "http://192.168.1.58:8000/storage/credenciales/6/3/conadis_1748484000.pdf",
   "observaciones": null,
   "aprobada_por": null,
   "fecha_aprobacion": null,
@@ -85,7 +85,7 @@ La aprobación y el rechazo son acciones **exclusivas del backoffice web** y no 
 
 ```bash
 # ── 0. Login ──────────────────────────────────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/login \
+curl -s -X POST http://192.168.1.58:8000/api/v1/login \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"email":"conductor@simetsa.gob.ec","password":"password"}'
@@ -94,7 +94,7 @@ TOKEN="<pegar_token_aqui>"
 VEHICULO_ID=3   # ID de un vehículo propio del conductor
 
 # ── 1. Solicitar credencial (sin archivo) ─────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -107,7 +107,7 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial
 # → HTTP 201 con la credencial en estado "pendiente"
 
 # ── 2. Solicitar credencial (con archivo PDF) ─────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json" \
   -F "numero_conadis=17-AB12-CONADIS" \
@@ -119,21 +119,21 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial
 # → HTTP 201; el campo "url_archivo" apuntará al PDF almacenado
 
 # ── 3. Consultar credencial del vehículo ──────────────────────────────────────
-curl -s http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json" \
   | jq .
 # → HTTP 200 con la credencial más reciente
 
 # ── Error: 401 sin token ──────────────────────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
   -H "Accept: application/json" \
   -d '{}'
 # → HTTP 401
 
 # ── Error: 422 segunda credencial activa (Art. 26) ────────────────────────────
 # (el vehículo ya tiene una credencial en estado pendiente o aprobada)
-curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -146,7 +146,7 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_ID}/credencial
 
 # ── Error: 403 vehículo de otro conductor ─────────────────────────────────────
 VEHICULO_AJENO=99
-curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_AJENO}/credencial \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_AJENO}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -156,7 +156,7 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos/${VEHICULO_AJENO}/credenc
 
 # ── Error: 404 vehículo sin credencial ────────────────────────────────────────
 VEHICULO_NUEVO=5  # vehículo que aún no tiene credencial
-curl -s http://localhost:8000/api/v1/vehiculos/${VEHICULO_NUEVO}/credencial \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos/${VEHICULO_NUEVO}/credencial \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json" \
   | jq .

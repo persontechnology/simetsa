@@ -2,7 +2,7 @@
 
 > **Base legal:** Art. 25 Ordenanza SIMETSA — cada conductor puede registrar uno o más vehículos activos a su nombre.
 
-Base URL: `${APP_URL}/api/v1` (desarrollo: `http://localhost:8000/api/v1`)
+Base URL: `${APP_URL}/api/v1` (desarrollo: `http://192.168.1.58:8000/api/v1`)
 
 ---
 
@@ -74,7 +74,7 @@ Todos los campos son opcionales (`sometimes`). Se pueden enviar solo los campos 
 
 ```bash
 # ── 0. Login ──────────────────────────────────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/login \
+curl -s -X POST http://192.168.1.58:8000/api/v1/login \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"email":"conductor@simetsa.gob.ec","password":"password"}'
@@ -82,13 +82,13 @@ curl -s -X POST http://localhost:8000/api/v1/login \
 TOKEN="<pegar_token_aqui>"
 
 # ── 1. Listar mis vehículos ───────────────────────────────────────────────────
-curl -s http://localhost:8000/api/v1/vehiculos \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json" \
   | jq .
 
 # ── 2. Registrar un vehículo ──────────────────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -103,13 +103,13 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos \
 # → HTTP 201 con el vehículo creado
 
 # ── 3. Ver detalle de un vehículo ─────────────────────────────────────────────
-curl -s http://localhost:8000/api/v1/vehiculos/3 \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos/3 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json" \
   | jq .
 
 # ── 4. Actualizar solo el color ───────────────────────────────────────────────
-curl -s -X PATCH http://localhost:8000/api/v1/vehiculos/3 \
+curl -s -X PATCH http://192.168.1.58:8000/api/v1/vehiculos/3 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -117,18 +117,18 @@ curl -s -X PATCH http://localhost:8000/api/v1/vehiculos/3 \
 # → HTTP 200 con el vehículo actualizado
 
 # ── 5. Eliminar (soft delete) ─────────────────────────────────────────────────
-curl -s -X DELETE http://localhost:8000/api/v1/vehiculos/3 \
+curl -s -X DELETE http://192.168.1.58:8000/api/v1/vehiculos/3 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json"
 # → HTTP 200 {"exito":true,"mensaje":"Vehículo eliminado correctamente.",...}
 
 # ── Error: 401 sin token ──────────────────────────────────────────────────────
-curl -s http://localhost:8000/api/v1/vehiculos \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Accept: application/json"
 # → HTTP 401
 
 # ── Error: 422 placa inválida ─────────────────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -137,7 +137,7 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos \
 # → HTTP 422 {"exito":false,"mensaje":"Errores de validación.","errores":{"placa":[...]}}
 
 # ── Error: 422 placa duplicada (Art. 25) ──────────────────────────────────────
-curl -s -X POST http://localhost:8000/api/v1/vehiculos \
+curl -s -X POST http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
@@ -146,7 +146,7 @@ curl -s -X POST http://localhost:8000/api/v1/vehiculos \
 # → HTTP 422 {"exito":false,"mensaje":"La placa ABC-1234 ya está registrada en el sistema. (Art. 25)"}
 
 # ── Error: 403 vehículo de otro conductor ─────────────────────────────────────
-curl -s http://localhost:8000/api/v1/vehiculos/99 \
+curl -s http://192.168.1.58:8000/api/v1/vehiculos/99 \
   -H "Authorization: Bearer $TOKEN" \
   -H "Accept: application/json"
 # → HTTP 403 si el vehículo 99 no pertenece al conductor autenticado

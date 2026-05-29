@@ -138,34 +138,34 @@ Esta carpeta sobrevive entre sesiones de Claude Code y será la base del manual 
 
 ```bash
 # Login (obtener token Sanctum)
-curl -X POST http://localhost:8000/api/v1/auth/login \
+curl -X POST http://192.168.1.58:8000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"email":"conductor@simetsa.gob.ec","password":"password"}'
 # → Copiar el "token" del JSON de respuesta.
 
 # GET — listado del usuario autenticado
-curl http://localhost:8000/api/v1/vehiculos \
+curl http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer TU_TOKEN_AQUI" \
   -H "Accept: application/json"
 
 # POST — crear recurso
-curl -X POST http://localhost:8000/api/v1/vehiculos \
+curl -X POST http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer TU_TOKEN_AQUI" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"placa":"PCH1234","tipo_vehiculo_id":1,"marca":"Toyota","modelo":"Hilux","color":"Blanco","anio":2020}'
 
 # Caso de error: 401 sin token
-curl http://localhost:8000/api/v1/vehiculos \
+curl http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Accept: application/json"
 
 # Caso de error: 422 validación
-curl -X POST http://localhost:8000/api/v1/vehiculos \
+curl -X POST http://192.168.1.58:8000/api/v1/vehiculos \
   -H "Authorization: Bearer TU_TOKEN_AQUI" \
   -H "Content-Type: application/json" \
   -H "Accept: application/json" \
   -d '{"placa":""}'
 ```
 
-Si la base URL del entorno no es `http://localhost:8000`, usar `${APP_URL}` y aclararlo al inicio del bloque.
+Si la base URL del entorno no es `http://192.168.1.58:8000`, usar `${APP_URL}` y aclararlo al inicio del bloque.

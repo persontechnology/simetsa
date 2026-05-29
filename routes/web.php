@@ -272,6 +272,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('puntos-venta/{punto}/estado',
             [PuntoVentaController::class, 'cambiarEstado'])->name('puntos-venta.estado');
 
+            
         // ===== SIMETSA - Catálogo de tipos de vehículo (Fase 4.A, Art. 25) =====
         Route::resource('tipos-vehiculo', TipoVehiculoController::class)
             ->parameters(['tipos-vehiculo' => 'tipo_vehiculo'])
@@ -283,6 +284,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('vehiculos/{vehiculo}/estado',
             [VehiculoController::class, 'cambiarEstado'])->name('vehiculos.estado');
 
+        
         // ===== SIMETSA — Credenciales CONADIS backoffice (Fase 4.C, Art. 26) =====
         Route::patch('credenciales-discapacidad/{credencial_discapacidad}/aprobar',
             [CredencialDiscapacidadController::class, 'aprobar'])->name('credenciales-discapacidad.aprobar');
