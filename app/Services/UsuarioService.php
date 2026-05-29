@@ -94,6 +94,7 @@ class UsuarioService
     public function actualizar(User $user, array $datos): User
     {
         return DB::transaction(function () use ($user, $datos) {
+            $perfil = $this->perfilConTrashed($user);
 
             // 1) Actualizar campos del User
             $datosUser = [
@@ -106,16 +107,16 @@ class UsuarioService
             $user->update($datosUser);
 
             // 2) Procesar foto de perfil (reemplazo de la anterior si aplica)
-            $rutaFoto = $user->perfil->foto_perfil;
+            $rutaFoto = $perfil->foto_perfil;
             if (isset($datos['foto_perfil'])) {
-                $rutaFoto = $this->procesarFotoPerfil($datos['foto_perfil'], $user->perfil->foto_perfil);
+                $rutaFoto = $this->procesarFotoPerfil($datos['foto_perfil'], $perfil->foto_perfil);
             }
 
             // 3) Actualizar el PerfilUsuario asociado
-            $user->perfil->update([
+            $perfil->update([
                 'cedula'           => $datos['cedula'],
                 'telefono'         => $datos['telefono'] ?? null,
-                'telefono_celular' => $datos['telefono_celular'],
+                'telefono_celular' => $datos['telefono_celular'] ?? null,
                 'direccion'        => $datos['direccion'] ?? null,
                 'fecha_nacimiento' => $datos['fecha_nacimiento'] ?? null,
                 'genero'           => $datos['genero'] ?? null,
@@ -147,12 +148,8 @@ class UsuarioService
     public function desactivar(User $user): void
     {
         DB::transaction(function () use ($user) {
-            $perfil = $user->perfil;
-            
-            if (!$perfil) {
-                throw new \Exception("El usuario no tiene un perfil asociado.");
-            }
-            
+            $perfil = $this->perfilConTrashed($user);
+
             // Actualizar activo y hacer soft delete en una sola operación
             $perfil->update(['activo' => false]);
             $perfil->delete();
@@ -200,6 +197,24 @@ class UsuarioService
     {
         $perfil = $user->perfil;
         return $perfil && !$perfil->trashed() && $perfil->activo;
+    }
+
+    /**
+     * Obtiene el PerfilUsuario asociado incluso cuando está soft deleted.
+     *
+     * @param  \App\Models\User  $user
+     * @return \App\Models\PerfilUsuario
+     * @throws \DomainException Si el usuario no tiene perfil registrado
+     */
+    private function perfilConTrashed(User $user): PerfilUsuario
+    {
+        $perfil = $user->perfil()->withTrashed()->first();
+
+        if (!$perfil) {
+            throw new DomainException('El usuario no tiene un perfil asociado.');
+        }
+
+        return $perfil;
     }
 
     /**

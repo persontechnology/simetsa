@@ -81,8 +81,11 @@ class AuthController extends ApiController
 
         $conductor = Conductor::where('user_id', $user->id)->first();
 
-        if (! $conductor || $conductor->estado !== Conductor::ESTADO_ACTIVO) {
-            return $this->error('La cuenta de conductor no está activa. Comunicate con la Comisaría.', null, 403);
+        if (! $conductor) {
+            return $this->error('Conductor no encontrado.', null, 403);
+        }
+        if($conductor->estado !== Conductor::ESTADO_ACTIVO) {
+            return $this->error('Conductor no está activo.', null, 403);
         }
 
         $token = $user->createToken('movil')->plainTextToken;

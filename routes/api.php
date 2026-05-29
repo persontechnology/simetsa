@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CredencialDiscapacidadController as ApiCredencialDiscapacidadController;
+use App\Http\Controllers\Api\DispositivoMovilController as ApiDispositivoMovilController;
 use App\Http\Controllers\Api\SesionParqueoController as ApiSesionParqueoController;
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\Api\TipoVehiculoController as ApiTipoVehiculoController;
@@ -78,5 +79,14 @@ Route::prefix('v1')->group(function () {
         Route::get('sesiones-parqueo/{sesion}', [ApiSesionParqueoController::class, 'show'])
             ->middleware('permission:sesiones_parqueo.ver')
             ->name('api.sesiones-parqueo.show');
+
+        // ===== Fase 5.G — Dispositivos móviles FCM (placeholder; envío real en Fase 6) =====
+        Route::post('dispositivos', [ApiDispositivoMovilController::class, 'store'])
+            ->middleware('permission:dispositivos_moviles.registrar')
+            ->name('api.dispositivos.store');
+        Route::delete('dispositivos/{token}', [ApiDispositivoMovilController::class, 'destroy'])
+            ->middleware('permission:dispositivos_moviles.registrar')
+            ->name('api.dispositivos.destroy')
+            ->where('token', '.+'); // El token FCM puede contener caracteres especiales
     });
 });

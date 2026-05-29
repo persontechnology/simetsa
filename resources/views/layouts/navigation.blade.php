@@ -48,7 +48,7 @@
 								<i class="ph-users"></i>
 								<span>Personas</span>
 							</a>
-							<ul class="nav-group-sub collapse {{ Route::is(['usuarios.*', 'roles.*'])?'show':'' }}">
+							<ul class="nav-group-sub collapse {{ Route::is(['usuarios.*', 'roles.*','conductores.*','agentes.*','puntos_venta.*'])?'show':'' }}">
                                 @can('usuarios.ver')
 									<li class="nav-item"><a href="{{ route('usuarios.index') }}" class="nav-link {{ Route::is('usuarios.*') ?'active':'' }}">Usuarios</a></li>
 								@endcan
@@ -56,13 +56,13 @@
 									<li class="nav-item"><a href="{{ route('roles.index') }}" class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}">Roles y permisos</a></li>
 								@endcan
                                 @can('conductores.ver')
-									<li class="nav-item"><a href="#" class="nav-link">Conductores</a></li>
+									<li class="nav-item"><a href="{{ route('conductores.index') }}" class="nav-link {{ Route::is('conductores.*') ? 'active' : '' }}">Conductores</a></li>
 								@endcan
                                 @can('agentes.ver')
 									<li class="nav-item"><a href="#" class="nav-link">Agentes</a></li>
 								@endcan
                                 @can('puntos_venta.ver')
-									<li class="nav-item"><a href="#" class="nav-link">Puntos de Venta</a></li>
+									<li class="nav-item"><a href="{{ route('puntos-venta.index') }}" class="nav-link {{ Route::is('puntos-venta.*') ? 'active' : '' }}">Puntos de Venta</a></li>
 								@endcan
 								
 							</ul>

@@ -1,28 +1,42 @@
 <?php
 
+// app/Http/Requests/StoreDispositivoMovilRequest.php
+
 namespace App\Http\Requests;
 
+use App\Models\DispositivoMovil;
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Validación para registrar o actualizar el token FCM de un dispositivo móvil.
+ */
 class StoreDispositivoMovilRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
     public function rules(): array
     {
         return [
-            //
+            'token_fcm'  => ['required', 'string', 'min:10', 'max:512'],
+            'plataforma' => ['required', 'string', 'in:' . implode(',', DispositivoMovil::plataformas())],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'token_fcm.required'  => 'El token FCM es obligatorio.',
+            'plataforma.required' => 'Debe indicar la plataforma (ios o android).',
+            'plataforma.in'       => 'La plataforma debe ser ios o android.',
         ];
     }
 }
