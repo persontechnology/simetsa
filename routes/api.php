@@ -51,7 +51,7 @@ Route::prefix('v1')->group(function () {
             
 
         // ===== Fase 4.C — Credencial CONADIS del conductor (Art. 26) =====
-        Route::post('vehiculos/{vehiculo}/credencial',  [ApiCredencialDiscapacidadController::class, 'store'])->name('api.credencial.store');
+        Route::post('vehiculos/{vehiculo}/credencial',  [ApiCredencialDiscapacidadController::class, 'store'])->name('api.credencial.store'); //url: /api/v1/vehiculos/{vehiculo}/credencial
         Route::get('vehiculos/{vehiculo}/credencial',   [ApiCredencialDiscapacidadController::class, 'show'])->name('api.credencial.show');
 
         // ===== Fase 5.C — Tickets del conductor (Arts. 13, 14, 19, 22) =====
