@@ -35,7 +35,16 @@ class DatabaseSeeder extends Seeder
             PuntoVentaSeeder::class,
             // Fase 4
             TipoVehiculoSeeder::class,
-            ConductorSeeder::class,
+            /* ConductorSeeder::class, */
+            /* VehiculoSeeder::class, */
+            CredencialDiscapacidadSeeder::class,
+            // Fase 5
+            /* TicketSeeder::class, */
+            // Fase 6
+            /* ProveedorPagoSeeder::class, */
+            // Fase 7 — requiere InfraccionSeeder antes de InmovilizacionSeeder
+            /* InfraccionSeeder::class, */
+            /* InmovilizacionSeeder::class, */
         ]);
     }
 }
