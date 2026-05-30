@@ -81,12 +81,19 @@ Trabajamos por **fases incrementales**. No avanzar a la siguiente fase hasta que
 
 **Pendiente para producción:** credenciales Deuna reales (`DEUNA_ENABLED=true`), credencial Firebase (`FIREBASE_CREDENTIALS`), reembolso automático vía Deuna (requiere endpoint oficial).
 
-## Fase 7 — Infracciones e Inmovilización ⏳ Próximo paso.
+## Fase 7 — Infracciones e Inmovilización ✓
 
-- Registro de infracciones desde la app del agente.
-- Cálculo automático de multas (2%, 4%, 8%, 20%, 50% del SBU según Art. 28-30).
-- Flujo de inmovilización y desinmovilización (Art. 15).
-- Pago de multas en línea.
+**7.A** Modelos y fundación: `Infraccion` + `Inmovilizacion` (1:1 nullable, Art. 15). Enums: `TipoInfraccion` (12 casos, Arts. 17+18), `EstadoInfraccion` (pendiente → pagada/anulada), `EstadoInmovilizacion` (activa → liberada/anulada). `Infraccion implements Cobrable` (morph `concepto`, integración Fase 6). Policies: agente solo ve las suyas; comisario/director bypass. Factories con states `tiempoExcedido`, `pagada`, `liberada`.
+
+**7.B** `InfraccionService`: `calcularMulta()` (tabla escalonada Art. 28: 2/4/8%; fijos Art. 29: 2/20%; agresión Art. 30: 50%; NegarPago: 0), `registrar()` (snapshot SBU, normalización placa), `inmovilizar()`, `liberar()` (Art. 15: pago previo o motivo administrativo), `anular()` (cascada sobre inmovilización activa). 27 tests de borde.
+
+**7.C** API agente en calle: `POST /api/v1/infracciones` (registrar + multa automática), `GET /api/v1/infracciones/{id}` (detalle con inmovilización), `POST /{id}/inmovilizar` (Art. 15), `POST /{id}/liberar`. Permisos: `infracciones.registrar`, `inmovilizaciones.aplicar`, `inmovilizaciones.retirar` (agregados al rol `agente_parqueo`). `docs/api/infracciones.md`. 14 tests.
+
+**7.D** API conductor: `GET /api/v1/conductor/infracciones` (historial por placa de vehículos + conductor_id), `POST /api/v1/infracciones/{id}/pagar` (inicia cobro vía `PagoManager`). Webhook genérico existente (`PagoWebhookController`) acredita el pago sobre `Infraccion` sin cambios → llama `acreditar()` → estado `pagada` + inmovilización `liberada` (Art. 15 end-to-end). 11 tests.
+
+**7.E** Backoffice supervisión: `InfraccionController` web (index con 7 filtros, show con inmovilización + transacciones embebidas, anular con modal). Vistas Blade: `infracciones/index.blade.php`, `infracciones/show.blade.php`. Acceso: super_admin/comisario/director. `AnularInfraccionRequest`. Rutas + breadcrumbs. 10 tests.
+
+**Total Fase 7:** 80 tests nuevos, 473 passing. 5 commits. Decisiones: `TipoInfraccion` BackedEnum PHP 8.2 (catálogo cerrado por Ordenanza), `Inmovilizacion` entidad propia (agente puede diferir del que registra la infracción), `monto_multa` persistido con snapshot `sbu_vigente`, `NegarPago` (Art. 17.g) registrable sin cargo económico, `conductor_id` nullable en `Infraccion`.
 
 ## Fase 8 — Reportes y Dashboard
 

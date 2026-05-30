@@ -25,6 +25,7 @@ use App\Http\Controllers\SolicitudPuntoVentaController;
 use App\Http\Controllers\TarifaController;
 use App\Http\Controllers\TipoPlazaController;
 use App\Http\Controllers\ConductorController;
+use App\Http\Controllers\InfraccionController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\CredencialDiscapacidadController;
 use App\Http\Controllers\TipoVehiculoController;
@@ -300,6 +301,7 @@ Route::middleware('auth')->group(function () {
             [ConductorController::class, 'bloquear'])->name('conductores.bloquear');
         Route::patch('conductores/{conductor}/desbloquear',
             [ConductorController::class, 'desbloquear'])->name('conductores.desbloquear');
+            
 
         // ===== SIMETSA — Vehículos exonerados (Fase 4.D, Art. 27) =====
         Route::resource('vehiculos-exonerados', VehiculoExoneradoController::class)
@@ -312,6 +314,13 @@ Route::middleware('auth')->group(function () {
             ->parameters(['tickets' => 'ticket']);
         Route::patch('tickets/{ticket}/anular', [TicketController::class, 'anular'])
             ->name('tickets.anular');
+
+        // ===== SIMETSA — Infracciones supervisión (Fase 7.E, Arts. 15, 28-30) =====
+        Route::resource('infracciones', InfraccionController::class)
+            ->only(['index', 'show'])
+            ->parameters(['infracciones' => 'infraccion']);
+        Route::patch('infracciones/{infraccion}/anular', [InfraccionController::class, 'anular'])
+            ->name('infracciones.anular');
 
     });
 });

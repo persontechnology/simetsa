@@ -327,3 +327,13 @@ Breadcrumbs::for('tickets.show', function (BreadcrumbTrail $trail, $ticket) {
     $trail->parent('tickets.index');
     $trail->push($ticket->codigo, route('tickets.show', $ticket));
 });
+
+// ===== Fase 7 — Infracciones =====
+Breadcrumbs::for('infracciones.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Infracciones', route('infracciones.index'));
+});
+Breadcrumbs::for('infracciones.show', function (BreadcrumbTrail $trail, $infraccion) {
+    $trail->parent('infracciones.index');
+    $trail->push("Infracción #{$infraccion->id}", route('infracciones.show', $infraccion));
+});

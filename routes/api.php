@@ -4,6 +4,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CredencialDiscapacidadController as ApiCredencialDiscapacidadController;
 use App\Http\Controllers\Api\DispositivoMovilController as ApiDispositivoMovilController;
+use App\Http\Controllers\Api\InfraccionController as ApiInfraccionController;
 use App\Http\Controllers\Api\PagoWebhookController;
 use App\Http\Controllers\Api\SesionParqueoController as ApiSesionParqueoController;
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
@@ -86,6 +87,29 @@ Route::prefix('v1')->group(function () {
         Route::get('sesiones-parqueo/{sesion}', [ApiSesionParqueoController::class, 'show'])
             ->middleware('permission:sesiones_parqueo.ver')
             ->name('api.sesiones-parqueo.show');
+
+        // ===== Fase 7.C — Infracciones (agente en calle, Arts. 15, 17, 18, 28-30) =====
+        // IMPORTANTE: rutas estáticas antes de la ruta con parámetro {infraccion}
+        Route::post('infracciones', [ApiInfraccionController::class, 'store'])
+            ->middleware('permission:infracciones.registrar')
+            ->name('api.infracciones.store');
+        Route::get('infracciones/{infraccion}', [ApiInfraccionController::class, 'show'])
+            ->middleware('permission:infracciones.ver')
+            ->name('api.infracciones.show');
+        Route::post('infracciones/{infraccion}/inmovilizar', [ApiInfraccionController::class, 'inmovilizar'])
+            ->middleware('permission:inmovilizaciones.aplicar')
+            ->name('api.infracciones.inmovilizar');
+        Route::post('infracciones/{infraccion}/liberar', [ApiInfraccionController::class, 'liberar'])
+            ->middleware('permission:inmovilizaciones.retirar')
+            ->name('api.infracciones.liberar');
+
+        // ===== Fase 7.D — Infracciones conductor (historial + pago de multa) =====
+        Route::get('conductor/infracciones', [ApiInfraccionController::class, 'historialConductor'])
+            ->middleware('permission:infracciones.ver')
+            ->name('api.conductor.infracciones.index');
+        Route::post('infracciones/{infraccion}/pagar', [ApiInfraccionController::class, 'pagar'])
+            ->middleware('permission:infracciones.ver')
+            ->name('api.infracciones.pagar');
 
         // ===== Fase 5.G — Dispositivos móviles FCM (placeholder; envío real en Fase 6) =====
         Route::post('dispositivos', [ApiDispositivoMovilController::class, 'store'])

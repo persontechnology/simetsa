@@ -274,9 +274,9 @@ class RolPermisoSeeder extends Seeder
             'sesiones_parqueo.ver', 'sesiones_parqueo.iniciar',
             'cancelaciones.ver',
 
-            // Infracciones (constatación - Art. 13, 15, 17)
+            // Infracciones e inmovilizaciones (Art. 13, 15, 17)
             'infracciones.ver', 'infracciones.registrar',
-            'inmovilizaciones.ver',
+            'inmovilizaciones.ver', 'inmovilizaciones.aplicar', 'inmovilizaciones.retirar',
 
             // Fiscalización
             'turnos.ver', 'turnos.iniciar', 'turnos.cerrar',
