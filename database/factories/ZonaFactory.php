@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ZonaFactory extends Factory
 {
+    protected $model = \App\Models\Zona::class;
     /**
      * Define the model's default state.
      *
@@ -17,7 +18,12 @@ class ZonaFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'codigo'   => 'ZN-' . $this->faker->unique()->numerify('#####'),
+            'nombre'   => ucfirst($this->faker->words(2, true)),
+            'descripcion' => $this->faker->sentence(),
+            'poligono' => null,
+            'color'    => '#0d4a8f',
+            'activo'   => true,
         ];
     }
 }

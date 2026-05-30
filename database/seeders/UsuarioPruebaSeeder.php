@@ -38,8 +38,13 @@ class UsuarioPruebaSeeder extends Seeder
      */
     public function run(): void
     {
-        // Salvaguarda: no ejecutar en producción
-        if (app()->environment('production')) {
+        // Salvaguarda: no ejecutar en producción. Comprobar varias fuentes
+        // (app env, configuración y variable de entorno) para soportar overrides
+        $isProduction = app()->environment('production')
+            || config('app.env') === 'production'
+            || env('APP_ENV') === 'production';
+
+        if ($isProduction) {
             $this->command->error('UsuarioPruebaSeeder está bloqueado en producción.');
             return;
         }

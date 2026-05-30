@@ -142,6 +142,16 @@
                                             @default
                                                 <span class="badge bg-secondary">{{ $v->credencial->estado }}</span>
                                         @endswitch
+
+                                        {{-- mostrar datos de la credencial --}}
+                                        <div class="small text-muted mt-1">
+                                            <div><strong>N° CONADIS:</strong> {{ $v->credencial->numero_conadis }}</div>
+                                            <div><strong>Beneficiario:</strong> {{ $v->credencial->nombre_beneficiario }}</div>
+                                            <div><strong>Discapacidad:</strong> {{ $v->credencial->porcentaje_discapacidad }}%</div>
+                                            <div><strong>Emisión:</strong> {{ $v->credencial->fecha_emision?->format('d/m/Y') }}</div>
+                                            <div><strong>Vencimiento:</strong> {{ $v->credencial->fecha_vencimiento?->format('d/m/Y') }}</div>
+                                        </div>
+
                                     @else
                                         <span class="text-muted">Sin credencial</span>
                                     @endif

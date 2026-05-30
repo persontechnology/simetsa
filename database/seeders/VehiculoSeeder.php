@@ -3,6 +3,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Vehiculo;
 use Illuminate\Database\Seeder;
 
 /**
@@ -19,5 +20,6 @@ class VehiculoSeeder extends Seeder
     {
         // No se siembran vehículos por defecto; los conductores los registran
         // desde la app móvil. Activar manualmente en entornos de demo.
+        Vehiculo::factory()->count(20)->create();
     }
 }
