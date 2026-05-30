@@ -4,7 +4,9 @@
 
 namespace App\Services;
 
+use App\Enums\EstadoReembolso;
 use App\Enums\EstadoTicket;
+use App\Enums\EstadoTransaccion;
 use App\Enums\MetodoPago;
 use App\Enums\ProveedorPago;
 use App\Enums\TipoCancelacion;
@@ -20,6 +22,7 @@ use App\Models\User;
 use App\Models\Vehiculo;
 use App\Models\VehiculoExonerado;
 use App\Models\Zona;
+use App\Services\Pagos\PagoManager;
 use Carbon\Carbon;
 use DomainException;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +41,10 @@ use Illuminate\Support\Facades\Log;
  */
 class TicketService
 {
+    public function __construct(private readonly PagoManager $pagoManager)
+    {
+    }
+
     /**
      * Compra un ticket digital de parqueo para el conductor.
      *
@@ -99,8 +106,15 @@ class TicketService
         // Paso 5: Calcular monto (incluye verificación de exoneración)
         $calculo = $this->calcularMonto((int) $datos['horas_compradas'], $vehiculo, $zona);
 
-        return DB::transaction(function () use ($datos, $conductor, $zona, $ahora, $calculo) {
+        $proveedorValor = $datos['proveedor'] ?? ProveedorPago::None->value;
+        $proveedor      = ProveedorPago::from($proveedorValor);
+        $esPagoDigital  = $proveedor->esDigital();
+
+        return DB::transaction(function () use ($datos, $conductor, $zona, $ahora, $calculo, $proveedor, $esPagoDigital) {
             $expira_en = $ahora->copy()->addHours((int) $datos['horas_compradas']);
+
+            // Si el pago es digital, el ticket nace en PendientePago hasta confirmar el cobro.
+            $estadoInicial = $esPagoDigital ? EstadoTicket::PendientePago : EstadoTicket::Pendiente;
 
             $ticket = Ticket::create([
                 'codigo'           => Ticket::generarCodigo(),
@@ -110,16 +124,20 @@ class TicketService
                 'calle_id'         => $datos['calle_id'] ?? null,
                 'horas_compradas'  => (int) $datos['horas_compradas'],
                 'monto'            => $calculo['monto'],
-                'estado'           => EstadoTicket::Pendiente,
+                'estado'           => $estadoInicial,
                 'metodo_pago'      => $datos['metodo_pago'] ?? MetodoPago::Efectivo->value,
-                'proveedor'        => $datos['proveedor'] ?? ProveedorPago::None->value,
+                'proveedor'        => $proveedor,
                 'es_exonerado'     => $calculo['es_exonerado'],
                 'tipo_exoneracion' => $calculo['tipo_exoneracion'],
                 'comprado_en'      => $ahora,
                 'expira_en'        => $expira_en,
             ]);
 
-            // TODO(Fase 6): NotificacionPushService::encolar(ticket, TIPO_EXPIRA_PRONTO)
+            if ($esPagoDigital) {
+                $this->pagoManager
+                    ->proveedor($proveedor->value)
+                    ->iniciarCobro($ticket, ['metodo_pago' => $datos['metodo_pago']]);
+            }
 
             return $ticket;
         });
@@ -148,6 +166,8 @@ class TicketService
         }
 
         return DB::transaction(function () use ($ticket, $por, $motivo) {
+            $estadoReembolso = $this->determinarEstadoReembolso($ticket);
+
             $ticket->update(['estado' => EstadoTicket::Cancelado]);
 
             return Cancelacion::create([
@@ -155,7 +175,8 @@ class TicketService
                 'cancelado_por'     => $por->id,
                 'tipo'              => TipoCancelacion::Conductor,
                 'motivo'            => $motivo,
-                'monto_reembolsado' => 0, // Efectivo: sin reembolso digital (proveedor digital en Fase 6.C)
+                'monto_reembolsado' => 0,
+                'estado_reembolso'  => $estadoReembolso,
                 'cancelado_en'      => now(),
             ]);
         });
@@ -184,20 +205,19 @@ class TicketService
         }
 
         return DB::transaction(function () use ($ticket, $por, $motivo) {
+            $estadoReembolso = $this->determinarEstadoReembolso($ticket);
+
             $ticket->update(['estado' => EstadoTicket::Anulado]);
 
-            $cancelacion = Cancelacion::create([
+            return Cancelacion::create([
                 'ticket_id'         => $ticket->id,
                 'cancelado_por'     => $por->id,
                 'tipo'              => TipoCancelacion::Admin,
                 'motivo'            => $motivo,
                 'monto_reembolsado' => 0,
+                'estado_reembolso'  => $estadoReembolso,
                 'cancelado_en'      => now(),
             ]);
-
-            // TODO(Fase 6): NotificacionPushService::encolar(ticket, TIPO_ANULADO)
-
-            return $cancelacion;
         });
     }
 
@@ -475,6 +495,32 @@ class TicketService
         return $minutosVencido <= 5
             ? EstadoTicket::EnTolerancia
             : EstadoTicket::Expirado;
+    }
+
+    /**
+     * Determina el estado de reembolso al cancelar/anular un ticket.
+     *
+     * Si el ticket tiene una transacción completada (pago digital confirmado),
+     * el reembolso queda pendiente de gestionar con el gateway.
+     * Si fue pagado en efectivo o PagoSimulado, no aplica reembolso digital.
+     *
+     * @param  Ticket  $ticket
+     * @return EstadoReembolso
+     */
+    private function determinarEstadoReembolso(Ticket $ticket): EstadoReembolso
+    {
+        if (! $ticket->proveedor?->esDigital()) {
+            return EstadoReembolso::NoAplica;
+        }
+
+        // Verificar si existe una transacción digital completada
+        $tieneTransaccionCompletada = $ticket->transacciones()
+            ->where('estado', EstadoTransaccion::Completada->value)
+            ->exists();
+
+        return $tieneTransaccionCompletada
+            ? EstadoReembolso::Pendiente
+            : EstadoReembolso::NoAplica;
     }
 
     /**

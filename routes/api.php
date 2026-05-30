@@ -4,6 +4,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CredencialDiscapacidadController as ApiCredencialDiscapacidadController;
 use App\Http\Controllers\Api\DispositivoMovilController as ApiDispositivoMovilController;
+use App\Http\Controllers\Api\PagoWebhookController;
 use App\Http\Controllers\Api\SesionParqueoController as ApiSesionParqueoController;
 use App\Http\Controllers\Api\TicketController as ApiTicketController;
 use App\Http\Controllers\Api\TipoVehiculoController as ApiTipoVehiculoController;
@@ -25,6 +26,11 @@ Route::prefix('v1')->group(function () {
     Route::post('registro', [AuthController::class, 'registrar'])->name('api.registro'); // Fase 4
     Route::post('login',    [AuthController::class, 'login'])->name('api.login');
 
+    // ===== Fase 6.C — Webhooks de pago (públicos, firmados por el gateway) =====
+    Route::post('pagos/webhook/{proveedor}', [PagoWebhookController::class, 'recibir'])
+        ->name('api.pagos.webhook')
+        ->where('proveedor', '[a-z]+');
+
     // --- Protegidas (token Sanctum) ---
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('logout', [AuthController::class, 'logout'])->name('api.logout');
@@ -36,12 +42,13 @@ Route::prefix('v1')->group(function () {
         // ===== Fase 4.B — Vehículos del conductor (Art. 25) =====
         Route::apiResource('vehiculos', ApiVehiculoController::class)
             ->names([
-                'index'   => 'api.vehiculos.index',
-                'store'   => 'api.vehiculos.store',
-                'show'    => 'api.vehiculos.show',
-                'update'  => 'api.vehiculos.update',
-                'destroy' => 'api.vehiculos.destroy',
+                'index'   => 'api.vehiculos.index',     // url: /api/v1/vehiculos
+                'store'   => 'api.vehiculos.store', // url: /api/v1/vehiculos
+                'show'    => 'api.vehiculos.show',  // url: /api/v1/vehiculos/{vehiculo}
+                'update'  => 'api.vehiculos.update',    // url: /api/v1/vehiculos/{vehiculo}
+                'destroy' => 'api.vehiculos.destroy',   // url: /api/v1/vehiculos/{vehiculo}
             ]);
+            
 
         // ===== Fase 4.C — Credencial CONADIS del conductor (Art. 26) =====
         Route::post('vehiculos/{vehiculo}/credencial',  [ApiCredencialDiscapacidadController::class, 'store'])->name('api.credencial.store');
