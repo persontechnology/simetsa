@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table->text('motivo');
 
-            /** Monto a reembolsar (actualmente $0 — pagos en efectivo; relevante cuando se integre PayPhone). */
+            /** Monto reembolsado por el proveedor digital al cancelar (0 para efectivo). */
             $table->decimal('monto_reembolsado', 8, 2)->default(0);
 
             $table->timestamp('cancelado_en');

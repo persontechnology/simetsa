@@ -43,7 +43,7 @@ return new class extends Migration
 
             /**
              * Método de pago (App\Enums\MetodoPago):
-             * efectivo | pago_simulado | payphone (Fase 6)
+             * efectivo | pago_simulado | link | qr | tarjeta | saldo
              */
             $table->string('metodo_pago', 30)->default('efectivo');
 

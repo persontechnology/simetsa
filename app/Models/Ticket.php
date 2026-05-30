@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\EstadoTicket;
 use App\Enums\MetodoPago;
+use App\Enums\ProveedorPago;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,6 +31,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float            $monto
  * @property EstadoTicket     $estado
  * @property MetodoPago       $metodo_pago
+ * @property ProveedorPago    $proveedor
  * @property bool             $es_exonerado
  * @property string|null      $tipo_exoneracion
  * @property \Carbon\Carbon   $comprado_en
@@ -41,13 +43,14 @@ class Ticket extends Model
 
     protected $fillable = [
         'codigo', 'conductor_id', 'vehiculo_id', 'zona_id', 'calle_id',
-        'horas_compradas', 'monto', 'estado', 'metodo_pago',
+        'horas_compradas', 'monto', 'estado', 'metodo_pago', 'proveedor',
         'es_exonerado', 'tipo_exoneracion', 'comprado_en', 'expira_en',
     ];
 
     protected $casts = [
         'estado'          => EstadoTicket::class,
         'metodo_pago'     => MetodoPago::class,
+        'proveedor'       => ProveedorPago::class,
         'es_exonerado'    => 'boolean',
         'horas_compradas' => 'integer',
         'monto'           => 'decimal:2',

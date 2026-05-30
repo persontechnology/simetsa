@@ -19,7 +19,7 @@ Dos productos:
 - Web: Blade + Bootstrap 5 + Leaflet.js (tiles OSM).
 - Móvil: React Native (JS, no TS) + react-native-maps (OSM) + API REST con Sanctum.
 - Paquetes: Breeze (auth web), Sanctum (auth API), Spatie Permission (roles/permisos).
-- Externos cerrados: **PayPhone** (pagos), **Firebase Cloud Messaging** (push), `storage/app/public` (archivos).
+- Externos cerrados: **Deuna** (pasarela de pagos, stub en Fase 6), **Firebase Cloud Messaging** (push), `storage/app/public` (archivos).
 
 > Si necesitás un paquete nuevo, **proponelo con justificación** antes de instalarlo.
 
@@ -96,8 +96,8 @@ Cédulas válidas para tests: `1710034065`, `1102345677`. En tests de activació
 - **Fase 2** ✓ Catálogos base (zonas, calles, manzanas, plazas, tipos, tarifas, horarios, feriados, parámetros).
 - **Fase 3** ✓ Agentes de Parqueo (3.A–3.D) y Puntos de Venta (3.E.1–3.E.2).
 - **Fase 4** ✓ Conductores y Vehículos (API móvil + backoffice supervisión). 4.A TipoVehiculo CRUD backoffice + API read-only. 4.B Vehiculo API CRUD (Sanctum, ownership). 4.C CredencialDiscapacidad CONADIS (Art. 26). 4.D Backoffice conductores + VehiculoExonerado (Art. 27). 55 tests.
-- **Fase 5** ✓ Sistema de Tickets Digitales. 5.A modelos/migraciones/enums. 5.B TicketService (Arts. 12–14, 22, 26, 27) + 21 tests de borde. 5.C API conductor (comprar, historial, cancelar). 5.D API agente (validar placa, iniciar sesión). 5.E–5.F Backoffice supervisión y anulación. 5.G FCM placeholder (dispositivos + cola lógica). 68 tests. Decisiones: EstadoTicket como BackedEnum PHP 8.2, SesionParqueo 1:1 con Ticket, Cancelacion unifica conductor/admin con tipo enum.
-- **Fase 6** ⏳ Integración PayPhone + FCM real. **Próximo paso.**
+- **Fase 5** ✓ Sistema de Tickets Digitales. 5.A modelos/migraciones/enums. 5.B TicketService (Arts. 12–14, 22, 26, 27) + 21 tests de borde. 5.C API conductor (comprar, historial, cancelar). 5.D API agente (validar placa, iniciar sesión). 5.E–5.F Backoffice supervisión y anulación. 5.G FCM placeholder (dispositivos + cola lógica). 68 tests (358 total). Decisiones: EstadoTicket como BackedEnum PHP 8.2, SesionParqueo 1:1 con Ticket, Cancelacion unifica conductor/admin con tipo enum.
+- **Fase 6** ⏳ Pagos multi-proveedor (Deuna stub) + FCM real. **En progreso.**
 
 Roadmap completo (Fases 4–11 con detalle): ver `docs/roadmap-fases.md`.
 Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
@@ -117,7 +117,7 @@ Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
 
 ## Decisiones cerradas
 
-- Pasarela de pagos: **PayPhone**.
+- Pasarela de pagos: **Deuna** (multi-proveedor vía PaymentProviderInterface; stub/fake en Fase 6).
 - Push: **Firebase Cloud Messaging**.
 - Mapas: **OpenStreetMap + Leaflet** (web) / **react-native-maps OSM** (móvil).
 - Almacenamiento: disco local `public`.

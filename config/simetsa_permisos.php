@@ -79,7 +79,7 @@ return [
     // ===== Pagos y liquidaciones (Art. 21, 22) =====
     'pagos' => [
         'pagos'                 => ['ver', 'registrar'],
-        'transacciones_payphone'=> ['ver'],
+        'transacciones_pago'    => ['ver'],
         'comprobantes'          => ['ver', 'emitir'],
         'liquidaciones'         => ['ver', 'generar'],
         'conciliaciones'        => ['ver', 'ejecutar'],

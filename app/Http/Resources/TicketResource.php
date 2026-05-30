@@ -29,6 +29,7 @@ class TicketResource extends JsonResource
             'monto'            => (float) $this->monto,
             'metodo_pago'      => $this->metodo_pago->value,
             'metodo_pago_label'=> $this->metodo_pago->etiqueta(),
+            'proveedor'        => $this->proveedor->value,
             'es_exonerado'     => $this->es_exonerado,
             'tipo_exoneracion' => $this->tipo_exoneracion,
             'comprado_en'      => $this->comprado_en?->toIso8601String(),

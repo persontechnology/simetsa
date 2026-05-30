@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Enums\EstadoTicket;
 use App\Enums\MetodoPago;
+use App\Enums\ProveedorPago;
 use App\Enums\TipoCancelacion;
 use App\Models\Cancelacion;
 use App\Models\Conductor;
@@ -48,7 +49,8 @@ class TicketService
      *     zona_id: int,
      *     calle_id: ?int,
      *     horas_compradas: int,
-     *     metodo_pago: string
+     *     metodo_pago: string,
+     *     proveedor: ?string
      * }  $datos
      * @return Ticket
      *
@@ -110,6 +112,7 @@ class TicketService
                 'monto'            => $calculo['monto'],
                 'estado'           => EstadoTicket::Pendiente,
                 'metodo_pago'      => $datos['metodo_pago'] ?? MetodoPago::Efectivo->value,
+                'proveedor'        => $datos['proveedor'] ?? ProveedorPago::None->value,
                 'es_exonerado'     => $calculo['es_exonerado'],
                 'tipo_exoneracion' => $calculo['tipo_exoneracion'],
                 'comprado_en'      => $ahora,
@@ -152,7 +155,7 @@ class TicketService
                 'cancelado_por'     => $por->id,
                 'tipo'              => TipoCancelacion::Conductor,
                 'motivo'            => $motivo,
-                'monto_reembolsado' => 0, // Efectivo: sin reembolso digital (PayPhone en Fase 6)
+                'monto_reembolsado' => 0, // Efectivo: sin reembolso digital (proveedor digital en Fase 6.C)
                 'cancelado_en'      => now(),
             ]);
         });
@@ -446,15 +449,15 @@ class TicketService
     /**
      * Calcula el estado real del ticket en función del tiempo actual.
      *
-     * No persiste el estado: el estado en BD se actualiza por un comando
-     * artisan programado (pendiente en deuda técnica). Esta función es
+     * No persiste el estado: el comando `simetsa:sincronizar-estados-tickets`
+     * usa este método para actualizar la BD periódicamente. También es la
      * autoridad para el agente en calle y para los tests de tolerancia.
      *
      * @param  Ticket  $ticket
      * @param  Carbon  $ahora
      * @return EstadoTicket
      */
-    private function calcularEstadoActual(Ticket $ticket, Carbon $ahora): EstadoTicket
+    public function calcularEstadoActual(Ticket $ticket, Carbon $ahora): EstadoTicket
     {
         // Estados terminales: no cambian
         if (in_array($ticket->estado, [EstadoTicket::Cancelado, EstadoTicket::Anulado], true)) {
