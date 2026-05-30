@@ -6,6 +6,8 @@ use App\Enums\RolSistema;
 use App\Models\User;
 use App\Policies\RolPolicy;
 use App\Policies\UserPolicy;
+use App\Services\Pagos\DeunaPaymentProvider;
+use App\Services\Pagos\PagoManager;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -27,7 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Registro del PagoManager como singleton con los proveedores disponibles.
+        $this->app->singleton(PagoManager::class, fn () => new PagoManager([
+            'deuna' => new DeunaPaymentProvider(),
+        ]));
     }
 
     /**

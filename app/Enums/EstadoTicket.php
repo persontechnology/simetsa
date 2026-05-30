@@ -23,6 +23,9 @@ enum EstadoTicket: string
     /** Tiempo vencido y fuera del margen de tolerancia. */
     case Expirado     = 'expirado';
 
+    /** Ticket comprado vía gateway digital; pago aún no confirmado (Fase 6.C). */
+    case PendientePago = 'pendiente_pago';
+
     /** Cancelado voluntariamente por el conductor antes de iniciar sesión. */
     case Cancelado    = 'cancelado';
 
@@ -34,6 +37,7 @@ enum EstadoTicket: string
     {
         return match ($this) {
             self::Pendiente    => 'Pendiente',
+            self::PendientePago => 'Pendiente de pago',
             self::Activo       => 'Activo',
             self::EnTolerancia => 'En tolerancia',
             self::Expirado     => 'Expirado',
@@ -47,6 +51,7 @@ enum EstadoTicket: string
     {
         return match ($this) {
             self::Pendiente    => 'secondary',
+            self::PendientePago => 'warning',
             self::Activo       => 'success',
             self::EnTolerancia => 'warning',
             self::Expirado     => 'danger',
@@ -58,12 +63,12 @@ enum EstadoTicket: string
     /** Indica si el ticket puede ser cancelado por el conductor (antes de sesión). */
     public function esCancelable(): bool
     {
-        return $this === self::Pendiente;
+        return in_array($this, [self::Pendiente, self::PendientePago], true);
     }
 
     /** Indica si el ticket puede ser anulado administrativamente. */
     public function esAnulable(): bool
     {
-        return in_array($this, [self::Pendiente, self::Activo, self::EnTolerancia]);
+        return in_array($this, [self::Pendiente, self::PendientePago, self::Activo, self::EnTolerancia], true);
     }
 }

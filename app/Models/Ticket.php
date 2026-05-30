@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Cobrable;
 use App\Enums\EstadoTicket;
 use App\Enums\MetodoPago;
 use App\Enums\ProveedorPago;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -18,8 +20,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * Ciclo de vida:
  *   Pendiente → (agente inicia sesión) → Activo → Expirado / En tolerancia
+ *   PendientePago → (webhook completada) → Pendiente / Activo
  *   Pendiente → (conductor cancela) → Cancelado
  *   Pendiente|Activo|EnTolerancia → (comisario anula) → Anulado
+ *
+ * Implementa Cobrable para ser cobrado por DeunaPaymentProvider u otros gateways.
  *
  * @property int              $id
  * @property string           $codigo
@@ -37,7 +42,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Carbon\Carbon   $comprado_en
  * @property \Carbon\Carbon   $expira_en
  */
-class Ticket extends Model
+class Ticket extends Model implements Cobrable
 {
     use HasFactory, SoftDeletes;
 
@@ -57,6 +62,10 @@ class Ticket extends Model
         'comprado_en'     => 'datetime',
         'expira_en'       => 'datetime',
     ];
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Relaciones
+    // ────────────────────────────────────────────────────────────────────────
 
     /** Conductor que compró el ticket. */
     public function conductor(): BelongsTo
@@ -94,6 +103,46 @@ class Ticket extends Model
         return $this->hasOne(Cancelacion::class);
     }
 
+    /** Transacciones de pago asociadas al ticket (polimórfico). */
+    public function transacciones(): MorphMany
+    {
+        return $this->morphMany(TransaccionPago::class, 'concepto');
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Cobrable — contrato para el gateway de pagos
+    // ────────────────────────────────────────────────────────────────────────
+
+    /** {@inheritdoc} */
+    public function montoCobrable(): float
+    {
+        return (float) $this->monto;
+    }
+
+    /** {@inheritdoc} */
+    public function descripcionCobro(): string
+    {
+        return "Ticket de parqueo {$this->codigo} — {$this->horas_compradas}h zona {$this->zona?->nombre}";
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * Se llama desde el webhook handler cuando el pago se confirma.
+     * Transiciona el ticket de PendientePago a Pendiente (listo para que el agente inicie sesión).
+     * La notificación push se dispara en Fase 6.C.
+     */
+    public function acreditar(TransaccionPago $transaccion): void
+    {
+        if ($this->estado === EstadoTicket::PendientePago) {
+            $this->update(['estado' => EstadoTicket::Pendiente]);
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // Accessors
+    // ────────────────────────────────────────────────────────────────────────
+
     /** Etiqueta legible del estado para vistas Blade y API. */
     public function getEstadoLabelAttribute(): string
     {
@@ -106,15 +155,19 @@ class Ticket extends Model
         return $this->estado->color();
     }
 
+    // ────────────────────────────────────────────────────────────────────────
+    // Helpers
+    // ────────────────────────────────────────────────────────────────────────
+
     /**
      * Genera el próximo código de ticket con formato T-YYYY-NNNNN.
      * Usa withTrashed para no reutilizar códigos de tickets eliminados.
      */
     public static function generarCodigo(): string
     {
-        $anio     = now()->year;
-        $prefijo  = "T-{$anio}-";
-        $ultimo   = static::withTrashed()
+        $anio    = now()->year;
+        $prefijo = "T-{$anio}-";
+        $ultimo  = static::withTrashed()
             ->where('codigo', 'like', "{$prefijo}%")
             ->max('codigo');
 
