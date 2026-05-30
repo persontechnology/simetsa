@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "diglactic/laravel-breadcrumbs": "^10.1",
+        "kreait/laravel-firebase": "^7.2",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
