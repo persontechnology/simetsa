@@ -97,7 +97,8 @@ Cédulas válidas para tests: `1710034065`, `1102345677`. En tests de activació
 - **Fase 3** ✓ Agentes de Parqueo (3.A–3.D) y Puntos de Venta (3.E.1–3.E.2).
 - **Fase 4** ✓ Conductores y Vehículos (API móvil + backoffice supervisión). 4.A TipoVehiculo CRUD backoffice + API read-only. 4.B Vehiculo API CRUD (Sanctum, ownership). 4.C CredencialDiscapacidad CONADIS (Art. 26). 4.D Backoffice conductores + VehiculoExonerado (Art. 27). 55 tests.
 - **Fase 5** ✓ Sistema de Tickets Digitales. 5.A modelos/migraciones/enums. 5.B TicketService (Arts. 12–14, 22, 26, 27) + 21 tests de borde. 5.C API conductor (comprar, historial, cancelar). 5.D API agente (validar placa, iniciar sesión). 5.E–5.F Backoffice supervisión y anulación. 5.G FCM placeholder (dispositivos + cola lógica). 68 tests (358 total). Decisiones: EstadoTicket como BackedEnum PHP 8.2, SesionParqueo 1:1 con Ticket, Cancelacion unifica conductor/admin con tipo enum.
-- **Fase 6** ⏳ Pagos multi-proveedor (Deuna stub) + FCM real. **En progreso.**
+- **Fase 6** ✓ Pagos multi-proveedor + FCM real. 6.0 MetodoPago→dos campos (metodo_pago+proveedor), ProveedorPago enum, gate PagoSimulado por entorno, comando simetsa:sincronizar-estados-tickets. 6.A PaymentProviderInterface + Cobrable + TransaccionPago polimórfica + DeunaPaymentProvider (fake, sin HTTP) + PagoManager. 6.B kreait/laravel-firebase + EnviarNotificacionFCMJob (retry×3, lazy FCMService) + interruptor FCM_ENABLED. 6.C PendientePago en EstadoTicket, EstadoReembolso en Cancelacion, PagoWebhookController (POST /api/v1/pagos/webhook/{proveedor}, público). 393 tests (35 nuevos). Decisiones: proveedor explícito en request, PagoSimulado gateado, calcularEstadoActual() público, webhook registrado en modo fake.
+- **Fase 7** ⏳ Infracciones e Inmovilización. **Próximo paso.**
 
 Roadmap completo (Fases 4–11 con detalle): ver `docs/roadmap-fases.md`.
 Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
@@ -108,10 +109,11 @@ Inventario de los ~55-60 modelos por módulo: ver `docs/inventario-modelos.md`.
 
 - **`AgenteParqueoService::autorizar`** usa el patrón viejo de creación de perfil sin resolver identidad por cédula. Aplicar el mismo arreglo que `PuntoVentaService::activar` (resolución **cédula → correo → crear**) al volver sobre Fase 3. Alternativa: extraer un `ResolutorCuentaService` compartido.
 - `UsuarioController` y `RolController` (Fase 1) usan `authorizeResource` en constructor (incompatible con Laravel 11); migrar a `HasMiddleware`.
-- **Comando `simetsa:marcar-credenciales-vencidas`**: transicionar credenciales CONADIS con `fecha_vencimiento < today()` a estado `vencida`. Pendiente de Fase 6 o mantenimiento paralelo.
+- **Comando `simetsa:marcar-credenciales-vencidas`**: transicionar credenciales CONADIS con `fecha_vencimiento < today()` a estado `vencida`. Pendiente de mantenimiento.
 - **`VehiculoExonerado` sin suspensión temporal**: agregar acción `activar/desactivar` si el comisario necesita suspender una exoneración sin eliminarla (actualmente solo hay `activo` boolean).
-- **Estados de ticket en BD**: el estado `en_tolerancia` / `expirado` se calcula en tiempo real en `TicketService::calcularEstadoActual()`; la BD puede quedar con estado `activo` si el vehículo superó su tiempo. Un comando artisan programado debería sincronizar los estados — pendiente de Fase 6.
 - **`sesiones_parqueo.ver` no asignado a conductor**: el conductor ve la sesión embebida en `TicketResource` (relación `whenLoaded`); no tiene acceso directo al endpoint `/sesiones-parqueo/{id}`.
+- **Reembolsos Deuna pendientes sin procesador**: `Cancelacion.estado_reembolso = pendiente` queda sin acción automática hasta integrar el endpoint de reembolso de Deuna (requiere credenciales reales; Fase 8 o posterior).
+- **Notificación push al acreditar ticket**: `Ticket::acreditar()` no dispara notificación TIPO_EXPIRA_PRONTO todavía (pendiente activar `NotificacionPushService` en ese punto).
 
 ---
 

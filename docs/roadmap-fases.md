@@ -67,14 +67,21 @@ Trabajamos por **fases incrementales**. No avanzar a la siguiente fase hasta que
 
 **Total Fase 5:** 68 tests, 7 commits, 3 docs de API.
 
-## Fase 6 — Pasarela de Pagos PayPhone ⏳ Próximo paso.
+## Fase 6 — Pagos multi-proveedor + FCM real ✓
 
-- Integración con SDK de PayPhone (Laravel + React Native).
-- Liquidación automática **60/40** (agentes) y **90/10** (puntos de venta) — Art. 21.
-- Conciliación de pagos.
-- Generación de comprobantes (nota de venta interna, base preparada para SRI).
+**6.0** Cleanup: MetodoPago → dos campos (`metodo_pago` + `proveedor`), enum `ProveedorPago`, gate `PagoSimulado` por entorno, comando `simetsa:sincronizar-estados-tickets` (deuda técnica #5 resuelta), eliminación de PayPhone.
 
-## Fase 7 — Infracciones e Inmovilización
+**6.A** Arquitectura multi-proveedor: interfaces `Cobrable` + `PaymentProviderInterface`, modelo `TransaccionPago` (polimórfico, softDeletes), `DeunaPaymentProvider` en modo fake (sin HTTP externo), `PagoManager` singleton. `Http::assertNothingSent()` garantiza seguridad.
+
+**6.B** FCM real: `kreait/laravel-firebase` (^7.2), `EnviarNotificacionFCMJob` (tries=3, backoff exponencial, lazy FCMService), interruptor `FCM_ENABLED`, columnas `fallida_en/ultimo_error/omitida` en `notificaciones_push`.
+
+**6.C** Integración: `EstadoTicket::PendientePago`, `EstadoReembolso` en `Cancelacion`, `PagoWebhookController` (POST `/api/v1/pagos/webhook/{proveedor}`, público, idempotente), `Ticket::acreditar()` transiciona estado.
+
+**Total Fase 6:** 35 tests nuevos, 393 passing. Decisiones: proveedor explícito en request, webhook registrado desde inicio (fake acepta cualquier firma), kreait/laravel-firebase sobre firebase-php puro, `calcularEstadoActual()` público en `TicketService`.
+
+**Pendiente para producción:** credenciales Deuna reales (`DEUNA_ENABLED=true`), credencial Firebase (`FIREBASE_CREDENTIALS`), reembolso automático vía Deuna (requiere endpoint oficial).
+
+## Fase 7 — Infracciones e Inmovilización ⏳ Próximo paso.
 
 - Registro de infracciones desde la app del agente.
 - Cálculo automático de multas (2%, 4%, 8%, 20%, 50% del SBU según Art. 28-30).
