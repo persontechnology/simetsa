@@ -93,7 +93,7 @@ Trabajamos por **fases incrementales**. No avanzar a la siguiente fase hasta que
 
 **7.E** Backoffice supervisión: `InfraccionController` web (index con 7 filtros, show con inmovilización + transacciones embebidas, anular con modal). Vistas Blade: `infracciones/index.blade.php`, `infracciones/show.blade.php`. Acceso: super_admin/comisario/director. `AnularInfraccionRequest`. Rutas + breadcrumbs. 10 tests.
 
-**Total Fase 7:** 80 tests nuevos, 473 passing. 5 commits. Decisiones: `TipoInfraccion` BackedEnum PHP 8.2 (catálogo cerrado por Ordenanza), `Inmovilizacion` entidad propia (agente puede diferir del que registra la infracción), `monto_multa` persistido con snapshot `sbu_vigente`, `NegarPago` (Art. 17.g) registrable sin cargo económico, `conductor_id` nullable en `Infraccion`.
+**Total Fase 7:** 80 tests nuevos, 473 passing. 2 commits (`daf8b1f` código + `3b69086` limpieza). Decisiones: `TipoInfraccion` BackedEnum PHP 8.2 (catálogo cerrado por Ordenanza), `Inmovilizacion` entidad propia (agente puede diferir del que registra la infracción), `monto_multa` persistido con snapshot `sbu_vigente`, `NegarPago` (Art. 17.g) registrable sin cargo económico, `conductor_id` nullable en `Infraccion`. Commit de limpieza: `docs/api/infracciones.md` con endpoints conductor documentados (GET /conductor/infracciones, POST /{id}/pagar), `InmovilizacionSeeder` implementado, `InmovilizacionController` web stub eliminado.
 
 ## Fase 8 — Reportes y Dashboard
 
