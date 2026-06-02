@@ -32,6 +32,10 @@ use App\Http\Controllers\TipoVehiculoController;
 use App\Http\Controllers\VehiculoController;
 use App\Http\Controllers\VehiculoExoneradoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\Reportes\DashboardController;
+use App\Http\Controllers\Reportes\InfraccionesController;
+use App\Http\Controllers\Reportes\OcupacionController;
+use App\Http\Controllers\Reportes\RecaudacionController;
 use App\Http\Controllers\ZonaController;
 use Illuminate\Support\Facades\Route;
 
@@ -39,9 +43,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/kpis', [DashboardController::class, 'kpis'])->name('dashboard.kpis');
+});
 
 /*
  * Rutas autenticadas.
@@ -321,6 +326,24 @@ Route::middleware('auth')->group(function () {
             ->parameters(['infracciones' => 'infraccion']);
         Route::patch('infracciones/{infraccion}/anular', [InfraccionController::class, 'anular'])
             ->name('infracciones.anular');
+
+        // ===== SIMETSA — Reportes (Fase 8) =====
+        Route::prefix('reportes')->name('reportes.')->group(function () {
+
+            // 8.B — Recaudación
+            Route::get('recaudacion',       [RecaudacionController::class, 'index'])->name('recaudacion.index');
+            Route::get('recaudacion/excel', [RecaudacionController::class, 'excel'])->name('recaudacion.excel');
+            Route::get('recaudacion/pdf',   [RecaudacionController::class, 'pdf'])->name('recaudacion.pdf');
+
+            // 8.C — Infracciones
+            Route::get('infracciones',       [InfraccionesController::class, 'index'])->name('infracciones.index');
+            Route::get('infracciones/excel', [InfraccionesController::class, 'excel'])->name('infracciones.excel');
+            Route::get('infracciones/pdf',   [InfraccionesController::class, 'pdf'])->name('infracciones.pdf');
+
+            // 8.D — Ocupación
+            Route::get('ocupacion', [OcupacionController::class, 'index'])->name('ocupacion.index');
+
+        });
 
     });
 });

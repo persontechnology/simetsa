@@ -247,17 +247,19 @@
 
 				{{-- Reportes --}}
 				@canany(['reportes.ver', 'kpi.ver', 'auditoria.ver', 'accesos.ver'])
-				<li class="nav-item nav-item-submenu {{ Route::is(['reportes.*', 'kpi.*', 'auditoria.*', 'accesos.*']) ? 'nav-item-expanded nav-item-open' : '' }}">
+				<li class="nav-item nav-item-submenu {{ Route::is(['dashboard', 'reportes.*', 'kpi.*', 'auditoria.*', 'accesos.*']) ? 'nav-item-expanded nav-item-open' : '' }}">
 					<a href="#" class="nav-link">
 						<i class="ph-chart-pie"></i>
 						<span>Reportes</span>
 					</a>
-					<ul class="nav-group-sub collapse {{ Route::is(['reportes.*', 'kpi.*', 'auditoria.*', 'accesos.*']) ? 'show' : '' }}">
-						@can('reportes.ver')
-							<li class="nav-item"><a href="#" class="nav-link">Reportes</a></li>
-						@endcan
+					<ul class="nav-group-sub collapse {{ Route::is(['dashboard', 'reportes.*', 'kpi.*', 'auditoria.*', 'accesos.*']) ? 'show' : '' }}">
 						@can('kpi.ver')
-							<li class="nav-item"><a href="#" class="nav-link">KPI's</a></li>
+							<li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link {{ Route::is('dashboard')?'active':'' }}">Dashboard KPIs</a></li>
+						@endcan
+						@can('reportes.ver')
+							<li class="nav-item"><a href="{{ route('reportes.recaudacion.index') }}" class="nav-link {{ Route::is('reportes.recaudacion.*')?'active':'' }}">Recaudación</a></li>
+							<li class="nav-item"><a href="{{ route('reportes.infracciones.index') }}" class="nav-link {{ Route::is('reportes.infracciones.*')?'active':'' }}">Infracciones</a></li>
+							<li class="nav-item"><a href="{{ route('reportes.ocupacion.index') }}" class="nav-link {{ Route::is('reportes.ocupacion.*')?'active':'' }}">Ocupación</a></li>
 						@endcan
 						@can('accesos.ver')
 							<li class="nav-item"><a href="{{ route('accesos.index') }}" class="nav-link {{ Route::is('accesos.*')?'active':'' }}">Registro de accesos</a></li>

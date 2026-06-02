@@ -337,3 +337,17 @@ Breadcrumbs::for('infracciones.show', function (BreadcrumbTrail $trail, $infracc
     $trail->parent('infracciones.index');
     $trail->push("Infracción #{$infraccion->id}", route('infracciones.show', $infraccion));
 });
+
+// ===== Reportes (Fase 8) =====
+Breadcrumbs::for('reportes.recaudacion', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Recaudación', route('reportes.recaudacion.index'));
+});
+Breadcrumbs::for('reportes.infracciones', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Infracciones', route('reportes.infracciones.index'));
+});
+Breadcrumbs::for('reportes.ocupacion', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('Ocupación', route('reportes.ocupacion.index'));
+});

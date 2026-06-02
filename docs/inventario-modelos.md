@@ -58,37 +58,42 @@ Alcance real del sistema, agrupado por módulo. **No** limitarse a los modelos y
 - `SesionParqueo` (inicio/fin del estacionamiento).
 - `Cancelacion` (anulación con motivo).
 
-## Módulo de Pagos
+## Módulo de Pagos ✓ (Fase 6)
 
-- `Pago`.
-- `MetodoPago` (efectivo, PayPhone tarjeta, PayPhone billetera, transferencia).
-- `TransaccionPayphone` (logs de la pasarela).
-- `Comprobante` (nota de venta inicialmente, factura electrónica a futuro).
-- `LiquidacionAgente` (60/40 — Art. 21).
-- `LiquidacionPuntoVenta` (90/10 — Art. 21).
-- `ConciliacionPagos`.
+- `TransaccionPago` ✓ (polimórfica via `concepto_type/concepto_id`; registra pagos de Tickets e Infracciones). Reemplaza el modelo `Pago` original.
+- `MetodoPago` enum ✓ (efectivo, tarjeta, billetera, transferencia).
+- `ProveedorPago` enum ✓ (none, manual, deuna, pagomedios).
+- `Comprobante` (nota de venta — pendiente Fase 9+).
+- `LiquidacionAgente` (60/40 — Art. 21 — pendiente Fase 9+).
+- `LiquidacionPuntoVenta` (90/10 — Art. 21 — pendiente Fase 9+).
+- `ConciliacionPagos` (pendiente Fase 10).
 
-## Módulo de Infracciones y Sanciones
+## Módulo de Infracciones y Sanciones ✓ (Fase 7)
 
-- `Infraccion`.
-- `TipoInfraccion` (catálogo según Art. 17 y Art. 18).
-- `Multa` (porcentajes SBU — Art. 28, 29, 30).
-- `Inmovilizacion` (candados aplicados — Art. 15).
-- `OrdenPago` (generada por Comisaría — Art. 28).
-- `NotificacionInfraccion` (boleta digital).
-- `Impugnacion` (recursos contra una multa).
+- `Infraccion` ✓ (implements `Cobrable`, snapshot `monto_multa`+`sbu_vigente`).
+- `TipoInfraccion` enum ✓ (12 casos cerrados por Ordenanza: Arts. 17+18).
+- `EstadoInfraccion` enum ✓ (pendiente → pagada/anulada).
+- `Inmovilizacion` ✓ (candados — Art. 15, 1:1 con Infraccion).
+- `EstadoInmovilizacion` enum ✓ (activa → liberada/anulada).
+- `OrdenPago` (Comisaría — Art. 28 — pendiente Fase 9+).
+- `NotificacionInfraccion` (boleta digital — pendiente Fase 9+).
+- `Impugnacion` (recursos — pendiente Fase 9+).
 
 ## Módulo de Fiscalización
 
-- `TurnoAgente` (inicio/fin de jornada).
-- `RecorridoAgente` (geolocalización en zona).
-- `IncidenteCalle` (reportes desde la app del agente).
-- `ReporteECU911` (Art. 38.m).
+- `TurnoAgente` (inicio/fin de jornada — pendiente Fase 9+).
+- `RecorridoAgente` (geolocalización en zona — pendiente Fase 9+).
+- `IncidenteCalle` (reportes desde la app del agente — pendiente Fase 9+).
+- `ReporteECU911` (Art. 38.m — pendiente Fase 10).
 
-## Módulo de Reportes y Dashboard
+## Módulo de Reportes y Dashboard ✓ (Fase 8)
 
-- `ReporteGenerado` (cache de reportes pesados).
-- `KPI` (indicadores precalculados).
+No se crearon modelos nuevos: los reportes consultan directamente sobre modelos existentes via `ReporteService`.
+- `ReporteGenerado` — **descartado**: la caché Laravel 5 min cubre el caso de uso sin tabla persistente.
+- `KPI` — **descartado**: los KPIs se calculan on-demand y se cachean en Redis/file; no requieren tabla.
+- `app/Services/ReporteService.php` ✓ — centraliza todas las queries de dashboard y reportes.
+- `app/Exports/RecaudacionExport.php` ✓, `InfraccionesExport.php` ✓ — Maatwebsite Excel.
+- `resources/views/layouts/impresion.blade.php` ✓ — layout sin sidebar para PDF Blade imprimible.
 
 ## Módulo de Notificaciones
 

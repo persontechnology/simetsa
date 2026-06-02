@@ -95,20 +95,25 @@ Trabajamos por **fases incrementales**. No avanzar a la siguiente fase hasta que
 
 **Total Fase 7:** 80 tests nuevos, 473 passing. 2 commits (`daf8b1f` código + `3b69086` limpieza). Decisiones: `TipoInfraccion` BackedEnum PHP 8.2 (catálogo cerrado por Ordenanza), `Inmovilizacion` entidad propia (agente puede diferir del que registra la infracción), `monto_multa` persistido con snapshot `sbu_vigente`, `NegarPago` (Art. 17.g) registrable sin cargo económico, `conductor_id` nullable en `Infraccion`. Commit de limpieza: `docs/api/infracciones.md` con endpoints conductor documentados (GET /conductor/infracciones, POST /{id}/pagar), `InmovilizacionSeeder` implementado, `InmovilizacionController` web stub eliminado.
 
-## Fase 8 — Reportes y Dashboard
+## Fase 8 — Reportes y Dashboard ✓
 
-- Reportes de recaudación por zona, agente, punto de venta.
-- Reportes de infracciones.
-- Ocupación por hora/día/zona.
-- Dashboard con KPIs en tiempo real.
-- Exportación a PDF y Excel.
+**8.A Dashboard KPIs:** Vista principal (`GET /dashboard`) con 6 tarjetas (tickets activos, recaudación hoy/mes, infracciones pendientes, plazas ocupadas, agentes activos) + 3 gráficos Chart.js (línea recaudación 30 días, barras por zona, doughnut método de pago). Endpoint JSON `GET /dashboard/kpis` para polling AJAX cada 60 s. Cache Laravel 5 min. Dashboard accesible a todos los roles; KPIs visibles solo con permiso `kpi.ver` (super_admin, comisario, director_seguridad). `DashboardController`, `ReporteService::kpis()`. 15 tests.
 
-## Fase 9 — Aplicación Móvil (React Native)
+**8.B Reporte de Recaudación:** Vista `GET /reportes/recaudacion` con 4 tarjetas resumen + filtros (fecha desde/hasta, tipo ticket|infracción, proveedor, zona) + tabla paginada 50/página + link "Ver detalle". Exportación: `GET /reportes/recaudacion/excel` (Maatwebsite `.xlsx`, 8 columnas, headers en bold) y `GET /reportes/recaudacion/pdf` (Blade imprimible via `layouts.impresion`). Paquete instalado: `maatwebsite/excel ^3.1`. `RecaudacionController`, `ReporteService::recaudacion()`, `RecaudacionExport`. Acceso: `reportes.ver`; exportación: `reportes.exportar`. 15 tests.
 
-- App de Conductores (consumo completo de la API).
-- App de Agentes de Parqueo (fiscalización en calle, mapa, escaneo de placas).
-- Integración con FCM para push notifications.
-- Integración con mapas OpenStreetMap (react-native-maps).
+**8.C Reporte de Infracciones:** Vista `GET /reportes/infracciones` con 5 tarjetas (total, cobrado, pendiente, inmovilizadas activas) + filtros (fecha, estado, tipo, zona, agente) + tabla con badge de estado + badge de inmovilización + link a detalle de infracción. Excel + PDF vía misma infraestructura de 8.B. `InfraccionesController`, `ReporteService::infracciones()`, `InfraccionesExport`. 16 tests.
+
+**8.D Reporte de Ocupación:** Vista `GET /reportes/ocupacion` con 4 tarjetas (sesiones, duración promedio en min, hora pico, ocupadas ahora) + 3 gráficos Chart.js (barras por día, barras por hora del día 0-23, doughnut por zona). Filtros: rango de fechas + zona. Query con `EXTRACT(HOUR FROM inicio_at)` PostgreSQL. `OcupacionController`, `ReporteService::ocupacion()`. 9 tests.
+
+**Total Fase 8:** 56 tests nuevos, 529 total. Paquete nuevo: `maatwebsite/excel ^3.1`. Layout nuevo: `resources/views/layouts/impresion.blade.php`. Partial nuevo: `resources/views/reportes/_partials/kpi-card.blade.php` (reutilizado en los 4 reportes). Decisiones: Maatwebsite para Excel + Blade imprimible para PDF (sin `wkhtmltopdf`), Cache Laravel 5 min para KPIs, `whereHasMorph` para filtro zona en recaudación, `JSON_PRESERVE_ZERO_FRACTION` en endpoint kpis, `ReporteGenerado`/`KPI` como modelos descartados (queries directas + cache suficientes).
+
+## Fase 9 — Aplicación Móvil (Expo)
+
+- Stack: **Expo** (SDK, JS, sin TypeScript) + `react-native-maps` (OSM) + `expo-location`.
+- App de Conductores: registro/login, comprar ticket, historial, cancelar, ver infracciones, pagar multa.
+- App de Agentes de Parqueo: login, validar placa, iniciar sesión de parqueo, registrar infracción, aplicar/retirar candado, mapa de zona.
+- Integración con FCM para push notifications (`expo-notifications` + token registrado en `POST /api/v1/dispositivos`).
+- Mapas OpenStreetMap via `react-native-maps` con tiles OSM.
 
 ## Fase 10 — Integraciones Externas
 
